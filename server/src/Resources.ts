@@ -5,6 +5,10 @@ import pool from "../connection/dbConnection";
 dotEnv.config();
 
 export class HELPER {
+  public userInputQuery: string = `INSERT INTO "PrimePicks_Users" (id , name, email, password, phonenumber) VALUES ($1, $2, $3, $4, $5)`;
+  private checkIdinDBQuery: string = `SELECT COUNT(*) FROM "PrimePicks_Users" WHERE id = $1`;
+  public loginQuery: string = `SELECT name FROM "PrimePicks_Users" WHERE email = $1 AND password = $2`;
+  public errorMsg: string = "INTERNAL SERVER ERROR";
   public PasswordHasher(password: string): any {
     try {
       const key = process.env.KEY;
@@ -18,23 +22,19 @@ export class HELPER {
       const hash = crypto.createHmac("sha256", key);
       hash.update(password + salt);
       return hash.digest("hex");
-    } catch (e) {
-      console.log(e);
-      return null;
+    } catch {
+      throw new Error(this.errorMsg);
     }
   }
 
   private async CheckIDinDB(id: string): Promise<boolean> {
-    const query = `SELECT COUNT(*) FROM "PrimePicks_Users" WHERE id = $1`;
     try {
       pool.connect();
-      const res = await pool.query(query, [id]);
-      console.log("id:", id, { res });
+      const res = await pool.query(this.checkIdinDBQuery, [id]);
       const count = parseInt(res.rows[0].count, 10);
       return count === 0;
-    } catch (err) {
-      console.log(err);
-      throw new Error("INTERNAL ERROR");
+    } catch {
+      throw new Error(this.errorMsg);
     }
   }
 
@@ -49,15 +49,12 @@ export class HELPER {
       }
       const Genid = await this.CheckIDinDB(id);
       if (Genid === true) {
-        console.log("HERE IS ID");
         return id;
       } else {
-        console.log("HERE IS NO ID");
         return this.GenerateId();
       }
     } catch (e) {
-      console.log(e);
-      return "";
+      throw new Error(this.errorMsg);
     }
   }
 }

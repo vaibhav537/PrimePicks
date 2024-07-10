@@ -22,19 +22,43 @@ export const signup = async (
     const { username, password, email, phoneNumber } = req.body;
     let hashedPassword = helper.PasswordHasher(password);
     let id = await helper.GenerateId();
-    console.log("id: ", id);
-    console.log("name: ", username);
-    console.log("email: ", email);
-    console.log("phoneNumber", phoneNumber);
-    console.log("password", hashedPassword);
-    const result = client.query(
-      `INSERT INTO "PrimePicks_Users" (id , name, email, password, phonenumber) VALUES ($1, $2, $3, $4, $5)`,
-      [id, username, email, hashedPassword, phoneNumber]
-    );
+    client.query(helper.userInputQuery, [
+      id,
+      username,
+      email,
+      hashedPassword,
+      phoneNumber,
+    ]);
     client.release();
-    res.status(200).send({ msg: "Success", result });
-  } catch (e) {
-    console.error("Error executing query", e);
-    res.status(500).send("Internal Server Error");
+    res.status(200).send({ msg: "Success", result: true });
+  } catch {
+    pool.end();
+    res.status(500).send(helper.errorMsg);
+  }
+};
+
+export const login = async (
+  req: {
+    body: {
+      password: string;
+      email: string;
+    };
+  },
+  res: any
+) => {
+  try {
+    const client = await pool.connect();
+    const { password, email } = req.body;
+    let hashedPassword = helper.PasswordHasher(password);
+    const result = await client.query(helper.loginQuery, [
+      email,
+      hashedPassword,
+    ]);
+    const count = result.rows[0].name;
+    pool.end();
+    res.status(200).send({ msg: "Success", result: count });
+  } catch {
+    pool.end();
+    res.status(500).send(helper.errorMsg);
   }
 };
