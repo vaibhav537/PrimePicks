@@ -24,32 +24,36 @@ export class HELPER {
     }
   }
 
-   private async  CheckIDinDB(id: string): Promise<boolean> {
-    const query = `SELECT COUNT(*) FROM PrimePicks_Users WHERE id = $1`;
+  private async CheckIDinDB(id: string): Promise<boolean> {
+    const query = `SELECT COUNT(*) FROM "PrimePicks_Users" WHERE id = $1`;
     try {
-      const res = await pool.query(query,[id]);
-      const count = parseInt(res.rows[0].count,10);
+      pool.connect();
+      const res = await pool.query(query, [id]);
+      console.log("id:", id, { res });
+      const count = parseInt(res.rows[0].count, 10);
       return count === 0;
-    } catch {
+    } catch (err) {
+      console.log(err);
       throw new Error("INTERNAL ERROR");
     }
   }
 
-  public async GenerateId():  Promise<string> {
+  public async GenerateId(): Promise<string> {
     try {
-      const characters: string =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefighklmnopqrstuvwxyz0123456789";
-      const charactersLength = characters.length;
+      const characters: string = "0123456789";
+      const charactersLength: number = characters.length;
       let id = "";
       for (let i = 0; i < 8; i++) {
         const randomIndex = Math.floor(Math.random() * charactersLength);
         id += characters[randomIndex];
       }
       const Genid = await this.CheckIDinDB(id);
-      if (Genid === true){
-        return id;        
-      }else{
-       return this.GenerateId();
+      if (Genid === true) {
+        console.log("HERE IS ID");
+        return id;
+      } else {
+        console.log("HERE IS NO ID");
+        return this.GenerateId();
       }
     } catch (e) {
       console.log(e);
