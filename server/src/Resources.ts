@@ -4,20 +4,23 @@ import pool from "../connection/dbConnection";
 
 dotEnv.config();
 
-export class HELPER {
+class internalQueries {
   public userInputQuery: string = `INSERT INTO "PrimePicks_Users" (id , name, email, password, phonenumber) VALUES ($1, $2, $3, $4, $5)`;
-  private checkIdinDBQuery: string = `SELECT COUNT(*) FROM "PrimePicks_Users" WHERE id = $1`;
+  public checkIdinDBQuery: string = `SELECT COUNT(*) FROM "PrimePicks_Users" WHERE id = $1`;
   public loginQuery: string = `SELECT name FROM "PrimePicks_Users" WHERE email = $1 AND password = $2`;
+}
+
+export class HELPER extends internalQueries{
   public errorMsg: string = "INTERNAL SERVER ERROR";
   public PasswordHasher(password: string): any {
     try {
       const key = process.env.KEY;
       const salt = process.env.SALT;
       if (!key) {
-        throw new Error(`Internal Server Error`);
+        throw new Error(this.errorMsg);
       }
       if (!password || !salt) {
-        throw new Error(`Internal Server Error`);
+        throw new Error(this.errorMsg);
       }
       const hash = crypto.createHmac("sha256", key);
       hash.update(password + salt);
@@ -58,3 +61,4 @@ export class HELPER {
     }
   }
 }
+

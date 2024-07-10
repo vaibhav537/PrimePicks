@@ -33,7 +33,9 @@ export const signup = async (
     res.status(200).send({ msg: "Success", result: true });
   } catch {
     pool.end();
-    res.status(500).send(helper.errorMsg);
+    res
+      .status(500)
+      .send({ msg: "Failure", result: false, addMsg: helper.errorMsg });
   }
 };
 
@@ -54,11 +56,11 @@ export const login = async (
       email,
       hashedPassword,
     ]);
-    const count = result.rows[0].name;
+    const res = result.rows[0].name;
     pool.end();
-    res.status(200).send({ msg: "Success", result: count });
+    res.status(200).send({ msg: "Success", result: true, addMsg: res });
   } catch {
     pool.end();
-    res.status(500).send(helper.errorMsg);
+    res.status(500).send({ msg: "Failure", result:false, addMsg: helper.errorMsg });
   }
 };
