@@ -10,19 +10,20 @@ class internalQueries {
   public loginQuery: string = `SELECT name FROM "PrimePicks_Users" WHERE email = $1 AND password = $2`;
 }
 
+//#region class Helper
 export class HELPER extends internalQueries{
   public errorMsg: string = "INTERNAL SERVER ERROR";
   public PasswordHasher(password: string): any {
     try {
-      const key = process.env.KEY;
-      const salt = process.env.SALT;
+      const key: any = process.env.KEY;
+      const salt: any = process.env.SALT;
       if (!key) {
         throw new Error(this.errorMsg);
       }
       if (!password || !salt) {
         throw new Error(this.errorMsg);
       }
-      const hash = crypto.createHmac("sha256", key);
+      const hash: any = crypto.createHmac("sha256", key);
       hash.update(password + salt);
       return hash.digest("hex");
     } catch {
@@ -45,12 +46,12 @@ export class HELPER extends internalQueries{
     try {
       const characters: string = "0123456789";
       const charactersLength: number = characters.length;
-      let id = "";
-      for (let i = 0; i < 8; i++) {
-        const randomIndex = Math.floor(Math.random() * charactersLength);
+      let id: string = "";
+      for (let i:number = 0; i < 8; i++) {
+        const randomIndex: number = Math.floor(Math.random() * charactersLength);
         id += characters[randomIndex];
       }
-      const Genid = await this.CheckIDinDB(id);
+      const Genid : Boolean = await this.CheckIDinDB(id);
       if (Genid === true) {
         return id;
       } else {
@@ -61,4 +62,4 @@ export class HELPER extends internalQueries{
     }
   }
 }
-
+//#endregion
