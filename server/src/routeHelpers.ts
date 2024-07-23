@@ -8,7 +8,8 @@ export async function signupRouteHelper(values: Array<any>): Promise<boolean> {
     await client.query(helper.userInputQuery, values);
     client.release();
     return true;
-  } catch {
+  } catch(err) {
+    console.log(err);
     return false;
   }
 }

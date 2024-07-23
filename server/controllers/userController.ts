@@ -33,9 +33,9 @@ export const signup = async (
     } = req.body;
     let hashedPassword = helper.PasswordHasher(password);
     let id = await helper.GenerateId();
-    let createdAt  = helper.getCreatedAtTime("Asia/Kolkata");
-    
-    let values =  [
+    let createdAt = helper.getTime("Asia/Kolkata");
+    let updatedAt = helper.getTime("Asia/Kolkata");
+    let values = [
       id,
       username,
       email,
@@ -44,10 +44,14 @@ export const signup = async (
       firstName,
       isAdmin,
       lastName,
+      createdAt,
+      updatedAt,
     ];
-    const insertRes: Boolean = await  signupRouteHelper(values);
-    
-    res.status(200).send({ msg: "Success", result: true });
+    if (await signupRouteHelper(values)) {
+      res.status(200).send({ msg: "Success", result: true });
+    } else {
+      res.status(400).send({ msg: "Failure", result: false });
+    }
   } catch {
     pool.end();
     res

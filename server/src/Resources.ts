@@ -5,7 +5,7 @@ import pool from "../connection/dbConnection";
 dotEnv.config();
 
 class internalQueries {
-  public userInputQuery: string = `INSERT INTO "PrimePicks_Users" (id , username, email, password, phonenumber, firstname, isadmin, lastname) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
+  public userInputQuery: string = `INSERT INTO "PrimePicks_Users" (id , username, email, password, phonenumber, firstname, isadmin, lastname, createdat,updatedat) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`;
   public checkIdinDBQuery: string = `SELECT COUNT(*) FROM "PrimePicks_Users" WHERE id = $1`;
   public loginQuery: string = `SELECT name FROM "PrimePicks_Users" WHERE email = $1 AND password = $2`;
 }
@@ -64,7 +64,7 @@ export class HELPER extends internalQueries {
     }
   }
 
-  public getCreatedAtTime(timezone: string): string {
+  public getTime(timezone: string): string {
     const date = new Date();
     const options: Intl.DateTimeFormatOptions = {
       timeZone: timezone,
@@ -80,37 +80,29 @@ export class HELPER extends internalQueries {
     const formatter = new Intl.DateTimeFormat("en-US", options);
     const parts = formatter.formatToParts(date);
 
-    const dateTime = parts.reduce((acc, part) => {
-      switch (part.type) {
-        case "year":
-          return acc + part.value + "-";
-        case "month":
-          return acc + part.value + "-";
-        case "day":
-          return acc + part.value + "T";
-        case "hour":
-          return acc + part.value + ":";
-        case "minute":
-          return acc + part.value + ":";
-        case "second":
-          return acc + part.value;
-        default:
-          return acc;
-      }
-    }, "");
+    let year = '', month = '', day = '', hour = '', minute = '', second = '';
+
+    parts.forEach(part => {
+      if (part.type === 'year') year = part.value;
+      if (part.type === 'month') month = part.value;
+      if (part.type === 'day') day = part.value;
+      if (part.type === 'hour') hour = part.value;
+      if (part.type === 'minute') minute = part.value;
+      if (part.type === 'second') second = part.value;
+    });
 
     const offset = -date.getTimezoneOffset();
     const sign = offset >= 0 ? "+" : "-";
     const pad = (n: number) => (n < 10 ? "0" : "") + Math.abs(n);
     const offsetHours = pad(Math.floor(offset / 60));
     const offsetMinutes = pad(offset % 60);
-
-    return `${dateTime}${sign}${offsetHours}:${offsetMinutes}`;
+    const result = `${year}-${month}-${day}T${hour}:${minute}:${second}`
+    return result;
   }
 
   public async updateRecord(id: number) {
     const timezoneISO = "Asia/Kolkata";
-    const timestamp = this.getCreatedAtTime(timezoneISO);
+    const timestamp = this.getTime(timezoneISO);
 
     const query = "UPDATE your_table SET updated_at = $1 WHERE id = $2";
     const values = [timestamp, id];
