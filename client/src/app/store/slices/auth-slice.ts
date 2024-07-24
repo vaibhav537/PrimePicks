@@ -2,7 +2,6 @@ import { StateCreator } from "zustand";
 
 export interface UserInfoType {
   id: string;
-  firstName: string;
 }
 
 export interface AuthSlice {

@@ -1,13 +1,14 @@
 import * as crypto from "crypto";
 import * as dotEnv from "dotenv";
 import pool from "../connection/dbConnection";
-
+import jwt from "jsonwebtoken";
 dotEnv.config();
 
 class internalQueries {
   public userInputQuery: string = `INSERT INTO "PrimePicks_Users" (id , username, email, password, phonenumber, firstname, isadmin, lastname, createdat,updatedat) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`;
   public checkIdinDBQuery: string = `SELECT COUNT(*) FROM "PrimePicks_Users" WHERE id = $1`;
   public loginQuery: string = `SELECT name FROM "PrimePicks_Users" WHERE email = $1 AND password = $2`;
+  public afterSignupQuery: string = `SELECT email,firstname,lastname,isadmin FROM "PrimePicks_Users" WHERE id= $1`;
 }
 
 //#region class Helper
@@ -80,24 +81,41 @@ export class HELPER extends internalQueries {
     const formatter = new Intl.DateTimeFormat("en-US", options);
     const parts = formatter.formatToParts(date);
 
-    let year = '', month = '', day = '', hour = '', minute = '', second = '';
+    let year = "",
+      month = "",
+      day = "",
+      hour = "",
+      minute = "",
+      second = "";
 
-    parts.forEach(part => {
-      if (part.type === 'year') year = part.value;
-      if (part.type === 'month') month = part.value;
-      if (part.type === 'day') day = part.value;
-      if (part.type === 'hour') hour = part.value;
-      if (part.type === 'minute') minute = part.value;
-      if (part.type === 'second') second = part.value;
+    parts.forEach((part) => {
+      if (part.type === "year") year = part.value;
+      if (part.type === "month") month = part.value;
+      if (part.type === "day") day = part.value;
+      if (part.type === "hour") hour = part.value;
+      if (part.type === "minute") minute = part.value;
+      if (part.type === "second") second = part.value;
     });
-
-    const offset = -date.getTimezoneOffset();
-    const sign = offset >= 0 ? "+" : "-";
-    const pad = (n: number) => (n < 10 ? "0" : "") + Math.abs(n);
-    const offsetHours = pad(Math.floor(offset / 60));
-    const offsetMinutes = pad(offset % 60);
-    const result = `${year}-${month}-${day}T${hour}:${minute}:${second}`
+    const result = `${year}-${month}-${day}T${hour}:${minute}:${second}`;
     return result;
+  }
+
+  public async GenerateKey(id: string | number): Promise<string> {
+    try {
+      const payload = { id };
+      const options = {
+        expiresIn: `2h`,
+      };
+      const secretKey = process.env.JWTKEY || "JWT_FALLBACK_SECRET";
+      if (secretKey) {
+        const token = jwt.sign(payload, secretKey, options);
+        return token;
+      }
+      return "";
+    } catch (err) {
+      console.error(err);
+      return "";
+    }
   }
 
   public async updateRecord(id: number) {

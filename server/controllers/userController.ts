@@ -48,7 +48,8 @@ export const signup = async (
       updatedAt,
     ];
     if (await signupRouteHelper(values)) {
-      res.status(200).send({ msg: "Success", result: true });
+      const accessKey: string = await helper.GenerateKey(id);
+      res.status(200).send({ msg: "Success", result: true, addMsg: accessKey });
     } else {
       res.status(400).send({ msg: "Failure", result: false });
     }

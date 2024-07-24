@@ -14,8 +14,9 @@ const Page = () => {
   const handleSignup = async () => {
     if (email && password) {
       const response = await signUp(email, password);
-      if (response?.username) {
-        setUserInfo(response);
+      console.log("response", response);
+      if (response?.result === true) {
+        setUserInfo(response.addMsg);
         router.push("/");
       }
     }
