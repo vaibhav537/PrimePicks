@@ -1,32 +1,29 @@
-"use server";
-import jwt from "jsonwebtoken";
+"use client";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { useEffect, useState } from "react";
 
-export const verifyToken = (token: string): jwt.JwtPayload | null => {
+export const verifyToken = (token: string): JwtPayload | null => {
   try {
+    console.log(process.env.JWTKEY);
     const decoded = jwt.verify(
       token,
       process.env.JWTKEY || "JWT_FALLBACK_SECRET"
-    ) as jwt.JwtPayload;
+    ) as JwtPayload;
     return decoded;
   } catch (error) {
     return null;
   }
 };
 
-const useTokenChecker = (token: string): boolean => {
-  const [isTokenValid, setIsTokenValid] = useState<boolean>(true);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      const decodedToken = verifyToken(token);
-      setIsTokenValid(!!decodedToken);
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, [token]);
-
-  return isTokenValid;
+export const isTokenExpired = (token: string): boolean => {
+  try {
+    const decoded = jwt.decode(token) as JwtPayload;
+    if (decoded && decoded.exp) {
+      const currentTime = Math.floor(Date.now() / 1000);
+      return decoded.exp < currentTime;
+    }
+    return true;
+  } catch (error) {
+    return true;
+  }
 };
-
-export default useTokenChecker;

@@ -7,9 +7,11 @@ const TokenCheckerComponent = ({ token }) => {
   const isTokenValid = useTokenChecker(token);
   const router = useRouter();
   const removeUser = () => {
+    localStorage.clear();
     router.push("/");
+    return false;
   };
-  return isTokenValid ? removeUser() : true;
+  return isTokenValid ? true : removeUser();
 };
 
 export default TokenCheckerComponent;
