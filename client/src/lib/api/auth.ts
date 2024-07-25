@@ -22,5 +22,5 @@ export const signUp = async (email: string, password: string) => {
 };
 
 export const me = async () => {
-  return isStoredJWT() ? await (await get(createUrl("/api/me")))?.data : null;
+  return isStoredJWT() ? await (await get(createUrl("")))?.data : null;
 };
