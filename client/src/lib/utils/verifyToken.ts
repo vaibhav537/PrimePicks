@@ -1,13 +1,11 @@
-"use client";
+// utils/verifyToken.ts
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { useEffect, useState } from "react";
 
 export const verifyToken = (token: string): JwtPayload | null => {
   try {
-    console.log(process.env.JWTKEY);
     const decoded = jwt.verify(
       token,
-      process.env.JWTKEY || "JWT_FALLBACK_SECRET"
+      process.env.JWTKEY || "JWT_FALLBACK_KEY"
     ) as JwtPayload;
     return decoded;
   } catch (error) {
