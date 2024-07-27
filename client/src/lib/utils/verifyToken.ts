@@ -1,4 +1,4 @@
-// utils/verifyToken.ts
+"use server"
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 export const verifyToken = (token: string): JwtPayload | null => {
@@ -9,6 +9,7 @@ export const verifyToken = (token: string): JwtPayload | null => {
     ) as JwtPayload;
     return decoded;
   } catch (error) {
+    console.error(error);
     return null;
   }
 };

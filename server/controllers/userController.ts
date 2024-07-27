@@ -79,8 +79,10 @@ export const login = async (
       hashedPassword,
     ]);
     const res = result.rows[0].name;
+
+    console.log(result);
     pool.end();
-    res.status(200).send({ msg: "Success", result: true, addMsg: res });
+    //res.status(200).send({ msg: "Success", result: true, addMsg: res });
   } catch {
     pool.end();
     res

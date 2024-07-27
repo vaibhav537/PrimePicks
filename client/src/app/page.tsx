@@ -4,13 +4,12 @@ import { useEffect, useState } from "react";
 import HomeComponent from "../components/Home";
 
 export default function Home() {
-  const [token, setToken] = useState<string>("");
-  const { isValid, tokenData } = useTokenChecker(token);
+  const [token, setToken] = useState<string>("accessToken");
 
   useEffect(() => {
     const fetchedToken = localStorage.getItem("accessToken") || "";
     setToken(fetchedToken);
   }, []);
-
+  const { isValid, tokenData } = useTokenChecker(token);
   return isValid ? <HomeComponent /> : <div className="">PLEASE SIGNUP</div>;
 }

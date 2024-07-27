@@ -1,7 +1,7 @@
 // hooks/useTokenChecker.ts
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { verifyToken, isTokenExpired } from "../lib/utils/verifyToken";
 
 const useTokenChecker = (
@@ -12,10 +12,9 @@ const useTokenChecker = (
   const router = useRouter();
 
   useEffect(() => {
-    const checkToken = () => {
-      const decodedToken = verifyToken(token);
-      const tokenExpired = isTokenExpired(token);
-
+    const checkToken = async() => {
+      const decodedToken = await verifyToken(token);
+      const tokenExpired: boolean = await isTokenExpired(token);
       if (decodedToken && !tokenExpired) {
         setIsTokenValid(true);
         setTokenData(decodedToken);
@@ -23,12 +22,12 @@ const useTokenChecker = (
         setIsTokenValid(false);
         setTokenData(null);
         localStorage.removeItem("accessToken");
-        router.push("/");
+        router.push("/signup");
       }
     };
 
     const intervalId = setInterval(checkToken, 1000);
-    checkToken(); // Check token immediately on mount
+    checkToken();
 
     return () => clearInterval(intervalId);
   }, [token, router]);

@@ -21,6 +21,18 @@ export const signUp = async (email: string, password: string) => {
   }
 };
 
-export const me = async () => {
-  return isStoredJWT() ? await (await get(createUrl("")))?.data : null;
+export const login = async (email: string, password: string) => {
+  try {
+    const result = await post(createUrl("/api/auth/login"), {
+      password,
+      email,
+    });
+    if (!result) {
+      return alert("Could not login!");
+    }
+    setStoredJWT(result.data.addMsg);
+    return result.data;
+  } catch (error) {
+    console.log(error);
+  }
 };
