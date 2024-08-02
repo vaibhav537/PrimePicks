@@ -6,16 +6,22 @@ import { verifyToken, isTokenExpired } from "../lib/utils/verifyToken";
 
 const useTokenChecker = (
   token: string
-): { isValid: boolean; tokenData: jwt.JwtPayload | null } => {
+): { isValid: boolean; tokenData: JwtPayload | null } => {
   const [isTokenValid, setIsTokenValid] = useState<boolean>(true);
   const [tokenData, setTokenData] = useState<jwt.JwtPayload | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const checkToken = async() => {
+    const checkToken = async () => {
+      if (token === "accessToken") {
+        token = localStorage.getItem("accessToken") || "null";
+      }
+      if (token === "null") {
+        throw new Error("Cannot Get Token");
+      }
       const decodedToken = await verifyToken(token);
       const tokenExpired: boolean = await isTokenExpired(token);
-      if (decodedToken && !tokenExpired) {
+      if (!tokenExpired) {
         setIsTokenValid(true);
         setTokenData(decodedToken);
       } else {
@@ -26,7 +32,7 @@ const useTokenChecker = (
       }
     };
 
-    const intervalId = setInterval(checkToken, 1000);
+    const intervalId = setInterval(checkToken, 10000);
     checkToken();
 
     return () => clearInterval(intervalId);

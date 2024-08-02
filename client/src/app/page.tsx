@@ -11,5 +11,6 @@ export default function Home() {
     setToken(fetchedToken);
   }, []);
   const { isValid, tokenData } = useTokenChecker(token);
-  return isValid ? <HomeComponent /> : <div className="">PLEASE SIGNUP</div>;
+  
+  return isValid ? <HomeComponent data = {tokenData}  /> : <div className="">PLEASE SIGNUP</div>;
 }

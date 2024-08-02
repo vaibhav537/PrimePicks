@@ -1,5 +1,6 @@
-"use server"
+"use server";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { logger } from "./Helper";
 
 export const verifyToken = (token: string): JwtPayload | null => {
   try {
@@ -19,7 +20,9 @@ export const isTokenExpired = (token: string): boolean => {
     const decoded = jwt.decode(token) as JwtPayload;
     if (decoded && decoded.exp) {
       const currentTime = Math.floor(Date.now() / 1000);
-      return decoded.exp < currentTime;
+      const valueToReturn = decoded.exp < currentTime;
+      logger(valueToReturn.toString());
+      return valueToReturn;
     }
     return true;
   } catch (error) {
