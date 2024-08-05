@@ -17,7 +17,9 @@ const useTokenChecker = (
         token = localStorage.getItem("accessToken") || "null";
       }
       if (token === "null") {
-        throw new Error("Cannot Get Token");
+        setIsTokenValid(false);
+        setTokenData(null);
+        console.error("Cannot Get Token");
       }
       const decodedToken = await verifyToken(token);
       const tokenExpired: boolean = await isTokenExpired(token);
@@ -31,6 +33,7 @@ const useTokenChecker = (
         router.push("/signup");
       }
     };
+
 
     const intervalId = setInterval(checkToken, 10000);
     checkToken();

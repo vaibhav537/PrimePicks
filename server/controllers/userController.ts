@@ -1,6 +1,6 @@
 import pool from "../connection/dbConnection";
 import { HELPER } from "../src/Resources";
-import { signupRouteHelper } from "../src/routeHelpers";
+import { loginRouteHelper, signupRouteHelper } from "../src/routeHelpers";
 const helper = new HELPER();
 
 export const invalidResponseHandler = (req: any, res: any) => {
@@ -71,18 +71,16 @@ export const login = async (
   res: any
 ) => {
   try {
-    const client = await pool.connect();
     const { password, email } = req.body;
     let hashedPassword = helper.PasswordHasher(password);
-    const result = await client.query(helper.loginQuery, [
-      email,
-      hashedPassword,
-    ]);
-    const res = result.rows[0].name;
-
-    console.log(result);
-    pool.end();
-    //res.status(200).send({ msg: "Success", result: true, addMsg: res });
+    const values = [email,hashedPassword];
+    const result = await loginRouteHelper(values);
+    if(result.status === true && result.id !== 0) {
+      const accessKey: string = await helper.GenerateKey(result.id);
+      res.status(200).send({ msg: "Success", result: true, addMsg: accessKey });
+    }else{
+      res.status(400).send({ msg: "Failure", result: false });
+    }
   } catch {
     pool.end();
     res

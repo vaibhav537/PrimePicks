@@ -10,7 +10,7 @@ export const verifyToken = (token: string): JwtPayload | null => {
     ) as JwtPayload;
     return decoded;
   } catch (error) {
-    console.error(error);
+    console.error("INTERNAL ERROR");
     return null;
   }
 };
