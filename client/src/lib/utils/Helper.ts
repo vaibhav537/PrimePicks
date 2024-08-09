@@ -2,6 +2,7 @@
 import path from "path";
 import fs from "fs";
 
+
 export async function logger(msg: string) {
   try{
   const logDirectory = path.join(__dirname, "logs");
