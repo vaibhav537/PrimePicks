@@ -21,7 +21,6 @@ export const isTokenExpired = (token: string): boolean => {
     if (decoded && decoded.exp) {
       const currentTime = Math.floor(Date.now() / 1000);
       const valueToReturn = decoded.exp < currentTime;
-      logger(valueToReturn.toString());
       return valueToReturn;
     }
     return true;

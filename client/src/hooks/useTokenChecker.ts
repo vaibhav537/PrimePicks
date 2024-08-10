@@ -1,8 +1,9 @@
 // hooks/useTokenChecker.ts
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { verifyToken, isTokenExpired } from "../lib/utils/verifyToken";
+import { useRouter } from "next/navigation";
+const callingInterval: number = 30000;
 
 const useTokenChecker = (
   token: string
@@ -10,7 +11,6 @@ const useTokenChecker = (
   const [isTokenValid, setIsTokenValid] = useState<boolean>(true);
   const [tokenData, setTokenData] = useState<jwt.JwtPayload | null>(null);
   const router = useRouter();
-
   useEffect(() => {
     const checkToken = async () => {
       if (token === "accessToken") {
@@ -34,12 +34,11 @@ const useTokenChecker = (
       }
     };
 
-
-    const intervalId = setInterval(checkToken, 10000);
+    const intervalId = setInterval(checkToken, callingInterval);
     checkToken();
 
     return () => clearInterval(intervalId);
-  }, [token, router]);
+  }, [token]);
 
   return { isValid: isTokenValid, tokenData };
 };

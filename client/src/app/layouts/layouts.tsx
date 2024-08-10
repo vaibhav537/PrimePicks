@@ -6,7 +6,7 @@ import ClientStoreLayout from "./client-store-layout";
 
 const Layouts = ({ children }: { children: React.ReactNode }) => {
     const pathName = usePathname();
-    return !pathName.includes("/admin")? <AdminLayout>{children}</AdminLayout>: <ClientStoreLayout>{children}</ClientStoreLayout>
+    return pathName.includes("/admin")? <AdminLayout>{children}</AdminLayout>: <ClientStoreLayout>{children}</ClientStoreLayout>
 };
 
 export default Layouts;
