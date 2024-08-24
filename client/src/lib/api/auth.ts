@@ -1,6 +1,6 @@
 import { createUrl, get, isStoredJWT, post, setStoredJWT } from "./apiClients";
 
-export const signUp = async (email: string, password: string) => {
+export const signUp = async (email: string, password: string , isAdmin:boolean = false) => {
   try {
     const result = await post(createUrl("/api/auth/signup"), {
       username: "DEMO123456",
@@ -9,7 +9,7 @@ export const signUp = async (email: string, password: string) => {
       lastName: "PrimePicks",
       email,
       phoneNumber: "6390330324",
-      isAdmin: true,
+      isAdmin,
     });
     if (!result) {
       return alert("Could not sign up");
