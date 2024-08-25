@@ -1,6 +1,11 @@
-import { createUrl, get, isStoredJWT, post, setStoredJWT } from "./apiClients";
+import { userLogin } from "../utils/Helper";
+import { createUrl, get, post, setStoredJWT } from "./apiClients";
 
-export const signUp = async (email: string, password: string , isAdmin:boolean = false) => {
+export const signUp = async (
+  email: string,
+  password: string,
+  isAdmin: boolean = false
+) => {
   try {
     const result = await post(createUrl("/api/auth/signup"), {
       username: "DEMO123456",
@@ -21,17 +26,28 @@ export const signUp = async (email: string, password: string , isAdmin:boolean =
   }
 };
 
-export const login = async (email: string, password: string) => {
+export const login = async (
+  email: string,
+  password: string,
+  isLoginforAdmin: boolean = false
+) => {
   try {
-    const result = await post(createUrl("/api/auth/login"), {
-      password,
-      email,
-    });
-    if (!result) {
-      return alert("Could not login!");
+    if(isLoginforAdmin) {
+      const result = await post(createUrl("/api/auth/adminLogin"), {
+        password,
+        email
+      })
+      if (!result) {
+        return alert("Could not login!");
+      }
+      setStoredJWT(result.data.addMsg);
+      return result.data;
     }
-    setStoredJWT(result.data.addMsg);
-    return result.data;
+    else{
+   const userResult = await userLogin(email, password);
+   return userResult;
+  }
+
   } catch (error) {
     console.log(error);
   }

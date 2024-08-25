@@ -43,3 +43,15 @@ export async function GetUserData(id: string): Promise<Array<string>> {
     return [];
   }
 }
+
+export async function adminLoginRouteHelper(values: Array<any>): Promise<LoginResult> {
+  try {
+    const client = await pool.connect();
+    const res = await client.query(helper.adminLoginQuery, values);
+    client.release();
+    return {status :true, id:res.rows[0].id};
+  } catch (err) {
+    console.log(err);
+    return {status: false, id: 0};
+  }
+}

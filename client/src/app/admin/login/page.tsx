@@ -13,7 +13,7 @@ const Page = () => {
   const { setUserInfo } = useAppStore();
   const handleLogin = async () => {
     if (email && password) {
-      const response = await login(email, password);
+      const response = await login(email, password, true);
       if (response?.result === true) {
         setUserInfo(response.addMsg);
         router.push("/admin");

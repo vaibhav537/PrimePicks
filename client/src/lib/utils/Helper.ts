@@ -1,6 +1,7 @@
 "use server";
 import path from "path";
 import fs from "fs";
+import { createUrl, post, setStoredJWT } from "../api/apiClients";
 
 
 export async function logger(msg: string) {
@@ -23,3 +24,15 @@ catch(error){
 }
 }
 
+export async function userLogin(password: string , email: string) {
+  const result = await post(createUrl("/api/auth/login"), {
+    password,
+    email,
+  });
+
+  if (!result) {
+    return alert("Could not login!");
+  }
+  setStoredJWT(result.data.addMsg);
+  return result.data;
+}
