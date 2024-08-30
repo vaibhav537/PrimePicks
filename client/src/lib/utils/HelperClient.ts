@@ -1,5 +1,7 @@
 "use client"
 
+import { createUrl, post, setAdminStoredJWT, setStoredJWT } from "../api/apiClients";
+
 export const footerLinks = [
     {
       title: "Make Money",
@@ -33,3 +35,29 @@ export const footerLinks = [
     }
   ];
   
+  
+export async function adminLogin(password: string, email: string){
+  const result = await post(createUrl("/api/auth/adminLogin"), {
+    password,
+    email
+  })
+  console.log(email + "    " + password);
+  if (!result) {
+    return alert("Could not login!");
+  }
+  setAdminStoredJWT(result.data.addMsg);
+  return result.data;
+}
+
+export async function userLogin(password: string , email: string) {
+  const result = await post(createUrl("/api/auth/login"), {
+    password,
+    email,
+  });
+
+  if (!result) {
+    return alert("Could not login!");
+  }
+  setStoredJWT(result.data.addMsg);
+  return result.data;
+}

@@ -1,5 +1,6 @@
-import { userLogin } from "../utils/Helper";
-import { createUrl, get, post, setStoredJWT } from "./apiClients";
+import { logger } from "../utils/Helper";
+import { adminLogin, userLogin } from "../utils/HelperClient";
+import { createUrl, post, setStoredJWT } from "./apiClients";
 
 export const signUp = async (
   email: string,
@@ -33,15 +34,9 @@ export const login = async (
 ) => {
   try {
     if(isLoginforAdmin) {
-      const result = await post(createUrl("/api/auth/adminLogin"), {
-        password,
-        email
-      })
-      if (!result) {
-        return alert("Could not login!");
-      }
-      setStoredJWT(result.data.addMsg);
-      return result.data;
+
+      const adminResult = await adminLogin(password,email);
+      return adminResult;
     }
     else{
    const userResult = await userLogin(email, password);

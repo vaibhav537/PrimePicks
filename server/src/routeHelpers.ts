@@ -2,7 +2,7 @@ import pool from "../connection/dbConnection";
 import { HELPER } from "../src/Resources";
 const helper = new HELPER();
 
-interface LoginResult {
+interface ReqResult {
   status: boolean;
   id: number;
 }
@@ -19,16 +19,15 @@ export async function signupRouteHelper(values: Array<any>): Promise<boolean> {
   }
 }
 
-
-export async function loginRouteHelper(values: Array<any>): Promise<LoginResult> {
+export async function loginRouteHelper(values: Array<any>): Promise<ReqResult> {
   try {
     const client = await pool.connect();
     const res = await client.query(helper.userLoginQuery, values);
     client.release();
-    return {status :true, id:res.rows[0].id};
+    return { status: true, id: res.rows[0].id };
   } catch (err) {
     console.log(err);
-    return {status: false, id: 0};
+    return { status: false, id: 0 };
   }
 }
 
@@ -44,14 +43,30 @@ export async function GetUserData(id: string): Promise<Array<string>> {
   }
 }
 
-export async function adminLoginRouteHelper(values: Array<any>): Promise<LoginResult> {
+export async function adminLoginRouteHelper(
+  values: Array<any>
+): Promise<ReqResult> {
   try {
     const client = await pool.connect();
     const res = await client.query(helper.adminLoginQuery, values);
     client.release();
-    return {status :true, id:res.rows[0].id};
+    return { status: true, id: res.rows[0].id };
   } catch (err) {
     console.log(err);
-    return {status: false, id: 0};
+    return { status: false, id: 0 };
+  }
+}
+
+export async function addCategoryRouteHelper(
+  values: Array<string>
+): Promise<ReqResult> {
+  try {
+    const client  = await pool.connect();
+    const res = await client.query(helper.addCategoryQuery, values);
+    client.release();
+    return { status: true, id: res.rows[0].id };
+  } catch (error) {
+    console.log(error);
+    return { status: false, id: 0 };
   }
 }

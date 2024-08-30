@@ -10,6 +10,7 @@ class internalQueries {
   public userLoginQuery: string = `SELECT id FROM "PrimePicks_Users" WHERE email = $1 AND password = $2`;
   public afterSignupQuery: string = `SELECT email,firstname,lastname,isadmin FROM "PrimePicks_Users" WHERE id= $1`;
   public adminLoginQuery: string = `SELECT id FROM "PrimePicks_Users" WHERE email = $1 AND password = $2 AND isadmin = true`;
+  public addCategoryQuery: string = `INSERT INTO "PrimePicks_"`;
 }
 
 //#region class Helper

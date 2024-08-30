@@ -2,6 +2,7 @@ import axios from "axios";
 
 const apiURL = "http://localhost:5000";
 const jwtKey = "accessToken";
+const adminKey = "adminToken";
 
 axios.interceptors.request.use(
   (config) => {
@@ -24,8 +25,13 @@ export const createUrl = (endPoint: string) => new URL(endPoint, apiURL).href;
 
 export const isStoredJWT = () => Boolean(localStorage.getItem(jwtKey));
 
+export const isAdminStoredJWT = () => Boolean(localStorage.getItem(adminKey));
+
 export const setStoredJWT = (accessToken: string) =>
   localStorage.setItem(jwtKey, accessToken);
+
+export const setAdminStoredJWT = (accessToken: string) =>
+  localStorage.setItem(adminKey, accessToken);
 
 export const get = axios.get;
 export const patch = axios.patch;
