@@ -59,10 +59,23 @@ export async function adminLoginRouteHelper(
 
 export async function addCategoryRouteHelper(
   values: Array<string>
-): Promise<ReqResult> {
+): Promise<Boolean> {
   try {
-    const client  = await pool.connect();
-    const res = await client.query(helper.addCategoryQuery, values);
+    const client = await pool.connect();
+    await client.query(helper.addCategoryQuery, values);
+    client.release();
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+
+export async function GetCategoryId(name: string): Promise<ReqResult> {
+  try {
+    console.log(`Category Name: ${name}`);
+    const client = await pool.connect();
+    const res = await client.query(helper.getCategoryIdQuery, [name]);
     client.release();
     return { status: true, id: res.rows[0].id };
   } catch (error) {
