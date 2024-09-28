@@ -73,7 +73,6 @@ export async function addCategoryRouteHelper(
 
 export async function GetCategoryId(name: string): Promise<ReqResult> {
   try {
-    console.log(`Category Name: ${name}`);
     const client = await pool.connect();
     const res = await client.query(helper.getCategoryIdQuery, [name]);
     client.release();
@@ -81,5 +80,16 @@ export async function GetCategoryId(name: string): Promise<ReqResult> {
   } catch (error) {
     console.log(error);
     return { status: false, id: 0 };
+  }
+}
+
+export async function GetAllCategory() {
+  try {
+    const client = await pool.connect();
+    const res = await client.query(helper.getAllCategoryQuery);
+    client.release();
+    return { status: true, data: res.rows };
+  } catch (error) {
+    return { status: false, data: [] };
   }
 }

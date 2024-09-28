@@ -33,6 +33,7 @@ export const setStoredJWT = (accessToken: string) =>
 export const setAdminStoredJWT = (accessToken: string) =>
   localStorage.setItem(adminKey, accessToken);
 
+
 export const get = axios.get;
 export const patch = axios.patch;
 export const post = axios.post;

@@ -19,6 +19,8 @@ const page = () => {
     const result = await addCategory(category);
     if (result){
       router.push("/admin/category/all-category")
+    }else {
+      alert("Error Occured!! ");
     }
   }
   return (

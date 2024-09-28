@@ -12,6 +12,7 @@ class internalQueries {
   public adminLoginQuery: string = `SELECT id FROM "PrimePicks_Users" WHERE email = $1 AND password = $2 AND isadmin = true`;
   public addCategoryQuery: string = `INSERT INTO "PrimePicks_Category"(id, name, products, createdat,updatedat) VALUES ($1,$2,$3,$4,$5)`;
   public getCategoryIdQuery: string = `SELECT id FROM "PrimePicks_Category" WHERE name = $1`;
+  public getAllCategoryQuery: string = `SELECT name FROM "PrimePicks_Category"`;
 }
 
 //#region class Helper
