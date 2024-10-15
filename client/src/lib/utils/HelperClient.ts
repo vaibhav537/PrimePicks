@@ -41,7 +41,6 @@ export async function adminLogin(password: string, email: string){
     password,
     email
   })
-  console.log(email + "    " + password);
   if (!result) {
     return alert("Could not login!");
   }

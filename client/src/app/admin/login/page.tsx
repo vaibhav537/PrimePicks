@@ -1,4 +1,4 @@
-  "use client";
+"use client";
 import { login } from "@/lib/api/auth";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,7 +14,6 @@ const Page = () => {
   const handleLogin = async () => {
     if (email && password) {
       const response = await login(email, password, true);
-      console.log(email, password);
       if (response?.result === true) {
         setUserInfo(response.addMsg);
         router.push("/admin");
