@@ -12,7 +12,6 @@ export const addCategory = async (name: string) => {
     });
     return response.status === 200 ? true : false;
   } catch (error) {
-    // alert("Error Occured !! ");
     console.log(error);
   }
 };
