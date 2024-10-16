@@ -1,4 +1,4 @@
-// hooks/useTokenChecker.ts
+
 import { useEffect, useState } from "react";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { verifyToken, isTokenExpired } from "../lib/utils/verifyToken";

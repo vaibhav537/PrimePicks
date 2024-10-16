@@ -5,11 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useAppStore } from "../store/store";
+import { Toaster } from "react-hot-toast";
+import { Helper } from "@/lib/utils/HelperClient";
 
 const Page = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const helper = new Helper();
   const { setUserInfo } = useAppStore();
   const handleSignup = async () => {
     if (email && password) {
@@ -17,11 +20,14 @@ const Page = () => {
       if (response?.result === true) {
         setUserInfo(response.addMsg);
         router.push("/");
+      } else {
+        helper.showErrorMessage("Please Check Email or Password!");
       }
     }
   };
   return (
     <section className="bg-gray-50">
+      <Toaster /> 
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <Link href="#">
           <Image

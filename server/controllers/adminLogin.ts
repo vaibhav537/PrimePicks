@@ -23,7 +23,7 @@ export const adminLogin = async (
         const accessKey: string = await helper.GenerateKey(result.id);
         res.status(200).send({ msg: "Success", result: true, addMsg: accessKey });
       }else{
-        res.status(400).send({ msg: "Failure", result: false });
+        res.status(400).send({ msg: "Failure", result: result.status });
       }
     } catch {
       pool.end();
