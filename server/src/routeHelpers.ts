@@ -84,6 +84,7 @@ export async function GetAllCategory() {
     client.release();
     return { status: true, data: res.rows };
   } catch (error) {
+    console.error(error);
     return { status: false, data: [] };
   }
 }
