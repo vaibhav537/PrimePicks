@@ -88,3 +88,15 @@ export async function GetAllCategory() {
     return { status: false, data: [] };
   }
 }
+
+export async function GetSpecificCategory(id: string) {
+  try {
+    const client = await pool.connect();
+    const res = await client.query(helper.getCategoryNameByIdQuery, [id]);
+    client.release();
+    return { status: true, data: res.rows[0].name };
+  } catch (error) {
+    console.error(error);
+    return { status: false, data: null };
+  }
+}

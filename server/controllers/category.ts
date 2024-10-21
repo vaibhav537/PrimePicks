@@ -1,6 +1,11 @@
 import pool from "../connection/dbConnection";
 import { HELPER } from "../src/Resources";
-import { addCategoryRouteHelper, GetAllCategory, GetCategoryId } from "../src/routeHelpers";
+import {
+  addCategoryRouteHelper,
+  GetAllCategory,
+  GetCategoryId,
+  GetSpecificCategory,
+} from "../src/routeHelpers";
 
 const helper = new HELPER();
 
@@ -20,7 +25,7 @@ export const addCategory = async (
     const values: Array<string> = [
       CId,
       categoryName,
-      "DEMO_VALUE",
+      "PP_DEMO_VALUE",
       createdAt,
       updatedAt,
     ];
@@ -43,11 +48,25 @@ export const addCategory = async (
 export const allCategory = async (req: any, res: any) => {
   try {
     const resultantData = await GetAllCategory();
-    res.status(200).send({ msg: "Success" , result: true, addMsg: resultantData.data});
-  } catch (error) { 
-    pool.end();
     res
-      .status(500)
-      .send({ msg: "Failure", result: false, addMsg: [] });
+      .status(200)
+      .send({ msg: "Success", result: true, addMsg: resultantData.data });
+  } catch (error) {
+    pool.end();
+    res.status(500).send({ msg: "Failure", result: false, addMsg: [] });
+  }
+};
+
+export const categoryNameById = async (req: any, res: any) => {
+  try {
+    const resultantData = await GetSpecificCategory(req.params.id);
+    if (resultantData.status === true) {
+      res
+        .status(200)
+        .send({ msg: "Success", result: true, addMsg: resultantData.data });
+    }
+  } catch (error) {
+    pool.end();
+    res.status(500).send({ msg: "Failure", result: false, addMsg: null });
   }
 };

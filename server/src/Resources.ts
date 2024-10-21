@@ -12,7 +12,8 @@ class internalQueries {
   public adminLoginQuery: string = `SELECT id FROM "PrimePicks_Users" WHERE email = $1 AND password = $2 AND isadmin = true`;
   public addCategoryQuery: string = `INSERT INTO "PrimePicks_Category"(id, name, products, createdat,updatedat) VALUES ($1,$2,$3,$4,$5)`;
   public getCategoryIdQuery: string = `SELECT id FROM "PrimePicks_Category" WHERE name = $1`;
-  public getAllCategoryQuery: string = `SELECT id,name, Count(products) FROM "PrimePicks_Category GROUP BY id, name"`;
+  public getAllCategoryQuery: string = `SELECT id, name, COUNT(*) FILTER (WHERE products IS NOT NULL AND products <> '' AND products <> 'PP_DEMO_VALUE') AS product_count FROM "PrimePicks_Category" GROUP BY id, name`;
+  public getCategoryNameByIdQuery: string = `SELECT name FROM "PrimePicks_Category" WHERE id = $1`;
 }
 
 //#region class Helper

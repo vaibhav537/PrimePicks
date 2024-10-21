@@ -30,3 +30,17 @@ export const allCategory = async () => {
     console.log(error);
   }
 };
+
+export const getCategory = async (id: string) => {
+  try {
+    const response = await post(
+      createUrl(constant + `/categoryNameById/${id}`)
+    );
+    if (response.status === 200) {
+      return { status: true, data: response.data.addMsg };
+    }
+  } catch (error) {
+    console.log(error);
+    return { status: false, data: "" };
+  }
+};

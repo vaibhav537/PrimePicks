@@ -21,7 +21,7 @@
 
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   Table,
   TableHeader,
@@ -31,18 +31,14 @@ import {
   TableCell,
   Input,
   Button,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-  Chip,
   User,
   Pagination,
   Selection,
-  ChipProps,
   SortDescriptor,
+  Tooltip,
 } from "@nextui-org/react";
-import { FaPlus, FaSearch } from "react-icons/fa";
+import { FaEdit, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 type Category = {
   id: number;
@@ -52,7 +48,6 @@ type CategoryListProps = {
   categories: Category[];
 };
 
-
 const columns = [
   { name: "ID", uid: "id", sortable: true },
   { name: "NAME", uid: "name", sortable: true },
@@ -60,19 +55,14 @@ const columns = [
   { name: "ACTIONS", uid: "actions" },
 ];
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
-
 type User = any;
 
 const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
+  const router = useRouter();
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set([])
   );
-  const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
-    new Set(INITIAL_VISIBLE_COLUMNS)
-  );
-  const [statusFilter, setStatusFilter] = React.useState<Selection>("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
     column: "age",
@@ -83,14 +73,13 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
 
   const hasSearchFilter = Boolean(filterValue);
 
-  const headerColumns = React.useMemo(() => {
-    if (visibleColumns === "all") return columns;
-
-    return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid)
-    );
-  }, [visibleColumns]);
-
+  const handleEdit = useCallback(
+    (id: string) => {
+      router.push(`/admin/category/edit-category/${id}`);
+    },
+    [router]
+  );
+  const headerColumns = columns;
   const filteredItems = React.useMemo(() => {
     let filteredUsers = [...categories];
 
@@ -99,17 +88,8 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
         user.name.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
-    if (
-      statusFilter !== "all" &&
-      Array.from(statusFilter).length !== statusOptions.length
-    ) {
-      filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.status)
-      );
-    }
-
     return filteredUsers;
-  }, [categories, filterValue, statusFilter]);
+  }, [categories, filterValue]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -130,34 +110,37 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((category: User, columnKey: React.Key) => {
-    const cellValue = category[columnKey as keyof User];
-
-    switch (columnKey) {
-      case "products" : {
-       return  <div>{category["_count"].products} </div>
+  const renderCell = React.useCallback(
+    (category: User, columnKey: React.Key) => {
+      const cellValue = category[columnKey as keyof User];
+      switch (columnKey) {
+        case "products": {
+          return <div>{category.product_count} </div>;
+        }
+        case "actions":
+          return (
+            <div className="relative flex justify-center items-center gap-2">
+              <Tooltip content="Edit Category" color="default">
+                <span
+                  className="text-lg text-blue-500 hover:text-blue-400 cursor-pointer"
+                  onClick={() => handleEdit(category.id)}
+                >
+                  <FaEdit />
+                </span>
+              </Tooltip>
+              <Tooltip content="Delete Category" color="default">
+                <span className="text-lg text-red-500 hover:text-red-400 cursor-pointer">
+                  <FaTrash />
+                </span>
+              </Tooltip>
+            </div>
+          );
+        default:
+          return cellValue;
       }
-      case "actions":
-        return (
-          <div className="relative flex justify-end items-center gap-2">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button isIconOnly size="sm" variant="light">
-                  Dots +-
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem>View</DropdownItem>
-                <DropdownItem>Edit</DropdownItem>
-                <DropdownItem>Delete</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
+    },
+    []
+  );
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -232,8 +215,6 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
     );
   }, [
     filterValue,
-    statusFilter,
-    visibleColumns,
     onSearchChange,
     onRowsPerPageChange,
     categories.length,
