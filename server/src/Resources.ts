@@ -14,6 +14,8 @@ class internalQueries {
   public getCategoryIdQuery: string = `SELECT id FROM "PrimePicks_Category" WHERE name = $1`;
   public getAllCategoryQuery: string = `SELECT id, name, COUNT(*) FILTER (WHERE products IS NOT NULL AND products <> '' AND products <> 'PP_DEMO_VALUE') AS product_count FROM "PrimePicks_Category" GROUP BY id, name`;
   public getCategoryNameByIdQuery: string = `SELECT name FROM "PrimePicks_Category" WHERE id = $1`;
+  public updateCategoryNameByIdQuery: string = `UPDATE "PrimePicks_Category" SET name = $2 WHERE id = $1 RETURNING name`;
+  public deleteCategoryByIDQuery: string = `DELETE FROM "PrimePicks_Category" WHERE id =$1`;
 }
 
 //#region class Helper

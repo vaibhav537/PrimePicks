@@ -74,6 +74,7 @@ export class Helper {
         color: "red",
         fontWeight: "bold",
       },
+      position: "bottom-right"
     });
   };
   public showSuccessMessage = (message: string) => {
@@ -84,6 +85,7 @@ export class Helper {
         color: "green",
         fontWeight: "bold",
       },
+      position: "bottom-right"
     });
   };
 }

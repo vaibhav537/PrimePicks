@@ -2,9 +2,11 @@ import pool from "../connection/dbConnection";
 import { HELPER } from "../src/Resources";
 import {
   addCategoryRouteHelper,
+  DeleteCategoryByID,
   GetAllCategory,
   GetCategoryId,
   GetSpecificCategory,
+  UpdateCategory,
 } from "../src/routeHelpers";
 
 const helper = new HELPER();
@@ -68,5 +70,47 @@ export const categoryNameById = async (req: any, res: any) => {
   } catch (error) {
     pool.end();
     res.status(500).send({ msg: "Failure", result: false, addMsg: null });
+  }
+};
+
+export const updateCategoryNameById = async (
+  req: {
+    params: { id: string }; // Added 'params' with 'id' type
+    body: { name: string };
+  },
+  res: any
+) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+    const resultantData = await UpdateCategory(id, name);
+    if (resultantData.status === true) {
+      res
+        .status(200)
+        .send({ msg: "Success", result: true, addMsg: resultantData.data });
+    } else {
+      res.status(500).send({ msg: "Failure", result: false, addMsg: null });
+    }
+  } catch (error) {
+    pool.end();
+    res.status(500).send({ msg: "Failure", result: false, addMsg: null });
+  }
+};
+
+export const deleteCategoryById = async (
+  req: { params: { id: string } },
+  res: any
+) => {
+  try {
+    const { id } = req.params;
+    const resultantData = await DeleteCategoryByID(id);
+    if (resultantData?.status === true) {
+      res.status(200).send({ msg: "Success", result: true });
+    } else {
+      res.status(404).send({ msg: "Failure", result: false });
+    }
+  } catch (error) {
+    pool.end();
+    res.status(500).send({ msg: "Failure", result: false });
   }
 };

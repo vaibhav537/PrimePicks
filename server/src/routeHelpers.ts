@@ -100,3 +100,32 @@ export async function GetSpecificCategory(id: string) {
     return { status: false, data: null };
   }
 }
+
+export async function UpdateCategory(id: string, CategoryName: string) {
+  try {
+    const client = await pool.connect();
+    const res = await client.query(helper.updateCategoryNameByIdQuery, [
+      id,
+      CategoryName,
+    ]);
+    client.release();
+    return { status: true, data: res.rows[0].name };
+  } catch (error) {
+    console.log(error);
+    return { status: false, data: null };
+  }
+}
+
+export async function DeleteCategoryByID(id: string) {
+  try {
+    const client = await pool.connect();
+    const res = await client.query(helper.deleteCategoryByIDQuery, [id]);
+    client.release();
+    if (res) {
+      return { status: true };
+    }
+  } catch (error) {
+    console.log(error);
+    return { status: false };
+  }
+}
