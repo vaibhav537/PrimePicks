@@ -6,7 +6,7 @@ import {
   post,
   axiosDelete,
 } from "./apiClients";
-const constant = "/api/auth";
+const constant: string = "/api/auth";
 
 export const addCategory = async (name: string) => {
   try {
@@ -19,6 +19,7 @@ export const addCategory = async (name: string) => {
     return response.status === 200 ? true : false;
   } catch (error) {
     console.log(error);
+    return false;
   }
 };
 
@@ -39,18 +40,24 @@ export const allCategory = async () => {
 
 export const getCategory = async (id: string) => {
   try {
+    if (!isAdminStoredJWT() || id === "") {
+      return { status: false, data: null };
+    }
     const response = await get(createUrl(constant + `/categoryNameById/${id}`));
     if (response.status === 200) {
       return { status: true, data: response.data.addMsg };
     }
   } catch (error) {
     console.log(error);
-    return { status: false, data: "" };
+    return { status: false, data: null };
   }
 };
 
 export const editCategory = async (id: string, category: string) => {
   try {
+    if (!isAdminStoredJWT() || id === "" || category) {
+      return { status: false, data: "" };
+    }
     const response = await patch(
       createUrl(constant + `/updateCategory/${id}`),
       {
@@ -69,6 +76,9 @@ export const editCategory = async (id: string, category: string) => {
 
 export const deleteCategory = async (id: string) => {
   try {
+    if (!isAdminStoredJWT() || id === "") {
+      return { status: false };
+    }
     const response = await axiosDelete(
       createUrl(constant + `/deleteCategory/${id}`)
     );

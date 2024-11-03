@@ -1,13 +1,6 @@
 import pool from "../connection/dbConnection";
+import { addCategoryRouteHelper, DeleteCategoryByID, GetAllCategory, GetCategoryId, GetSpecificCategory, UpdateCategory } from "../src/categoryRouteHelper";
 import { HELPER } from "../src/Resources";
-import {
-  addCategoryRouteHelper,
-  DeleteCategoryByID,
-  GetAllCategory,
-  GetCategoryId,
-  GetSpecificCategory,
-  UpdateCategory,
-} from "../src/routeHelpers";
 
 const helper = new HELPER();
 
@@ -24,10 +17,10 @@ export const addCategory = async (
     let CId = await helper.GenerateId();
     let createdAt = helper.getTime("Asia/Kolkata");
     let updatedAt = helper.getTime("Asia/Kolkata");
-    const values: Array<string> = [
+    const values: Array<string | bigint[]> = [
       CId,
       categoryName,
-      "PP_DEMO_VALUE",
+      [],
       createdAt,
       updatedAt,
     ];
@@ -83,7 +76,8 @@ export const updateCategoryNameById = async (
   try {
     const { id } = req.params;
     const { name } = req.body;
-    const resultantData = await UpdateCategory(id, name);
+    const updatedAtTime = helper.getTime("Asia/Kolkata");
+    const resultantData = await UpdateCategory(id, name, updatedAtTime);
     if (resultantData.status === true) {
       res
         .status(200)

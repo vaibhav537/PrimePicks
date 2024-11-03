@@ -12,6 +12,7 @@ import {
   deleteCategoryById,
   updateCategoryNameById,
 } from "../controllers/category";
+import { addProduct } from "../controllers/product";
 
 const router = express.Router();
 router.get("/", invalidResponseHandler);
@@ -24,4 +25,5 @@ router.get("/all-category", allCategory);
 router.get("/categoryNameById/:id", categoryNameById);
 router.patch("/updateCategory/:id", updateCategoryNameById);
 router.delete("/deleteCategory/:id", deleteCategoryById);
+router.post("/add-product", addProduct);
 export default router;

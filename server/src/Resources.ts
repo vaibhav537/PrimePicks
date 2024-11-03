@@ -6,16 +6,19 @@ dotEnv.config();
 
 class internalQueries {
   public userInputQuery: string = `INSERT INTO "PrimePicks_Users" (id , username, email, password, phonenumber, firstname, isadmin, lastname, createdat,updatedat) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`;
-  public checkIdinDBQuery: string = `SELECT COUNT(*) FROM "PrimePicks_Users" WHERE id = $1`;
+  public checkIdinDBQuery: string = `SELECT SUM(count) FROM (SELECT COUNT(*) AS count FROM "PrimePicks_Users" WHERE id = $1 UNION ALL SELECT COUNT(*) AS count FROM "PrimePicks_Category" WHERE id = $1 UNION ALL SELECT COUNT(*) AS count FROM "PrimePicks_Products" WHERE id = $1 UNION ALL SELECT COUNT(*) AS count FROM "PrimePicks_Orders" WHERE id = $1) AS combined_count;`;
   public userLoginQuery: string = `SELECT id FROM "PrimePicks_Users" WHERE email = $1 AND password = $2`;
   public afterSignupQuery: string = `SELECT email,firstname,lastname,isadmin FROM "PrimePicks_Users" WHERE id= $1`;
   public adminLoginQuery: string = `SELECT id FROM "PrimePicks_Users" WHERE email = $1 AND password = $2 AND isadmin = true`;
   public addCategoryQuery: string = `INSERT INTO "PrimePicks_Category"(id, name, products, createdat,updatedat) VALUES ($1,$2,$3,$4,$5)`;
   public getCategoryIdQuery: string = `SELECT id FROM "PrimePicks_Category" WHERE name = $1`;
-  public getAllCategoryQuery: string = `SELECT id, name, COUNT(*) FILTER (WHERE products IS NOT NULL AND products <> '' AND products <> 'PP_DEMO_VALUE') AS product_count FROM "PrimePicks_Category" GROUP BY id, name`;
+  public getAllCategoryQuery: string = `SELECT id, name, cardinality(products) AS product_count FROM "PrimePicks_Category"`;
   public getCategoryNameByIdQuery: string = `SELECT name FROM "PrimePicks_Category" WHERE id = $1`;
-  public updateCategoryNameByIdQuery: string = `UPDATE "PrimePicks_Category" SET name = $2 WHERE id = $1 RETURNING name`;
+  public updateCategoryNameByIdQuery: string = `UPDATE "PrimePicks_Category" SET name = $2, updatedat = $3 WHERE id = $1 RETURNING name`;
   public deleteCategoryByIDQuery: string = `DELETE FROM "PrimePicks_Category" WHERE id =$1`;
+  public addProductQuery: string = `INSERT INTO public."PrimePicks_Products" (id,title,description,"titlePrice","discountedPrice",colors,variants,images,"Created At","Updated At",reviews,category_id, orders) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`;
+  public getProductIdQuery: string = `SELECT id FROM "PrimePicks_Products" WHERE title = $1`;
+  public updateCategoryQuery: string = `UPDATE public."PrimePicks_Category" SET products = array_append (products::bigint[], $1) WHERE id = $2;`;
 }
 
 //#region class Helper
@@ -43,7 +46,7 @@ export class HELPER extends internalQueries {
     try {
       pool.connect();
       const res = await pool.query(this.checkIdinDBQuery, [id]);
-      const count = parseInt(res.rows[0].count, 10);
+      const count = parseInt(res.rows[0].sum || "0", 10);
       return count === 0;
     } catch {
       throw new Error(this.errorMsg);

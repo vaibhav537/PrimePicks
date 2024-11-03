@@ -143,6 +143,7 @@ const page = () => {
       const cellValue = category[columnKey as keyof User];
       switch (columnKey) {
         case "products": {
+          console.log({ category });
           return <div>{category.product_count} </div>;
         }
         case "actions":

@@ -1,5 +1,6 @@
 "use client";
 import { allCategory } from "@/lib/api/category";
+import { addProduct } from "@/lib/api/product";
 import {
   Button,
   Card,
@@ -22,7 +23,7 @@ interface ProductData {
   description: string[];
   discountedPrice: number;
   images: string[];
-  salePrice: number;
+  titlePrice: number;
   title: string;
   variants: string[];
 }
@@ -79,13 +80,38 @@ const Page = () => {
     setColor("");
   };
 
+  // const handleUpload = (data: { info: { secure_url: string } }) => {
+  //   setPhotos([...photos, data.info.secure_url]);
+  // };
+
+  //updated to get previous images
   const handleUpload = (data: { info: { secure_url: string } }) => {
-    setPhotos([...photos, data.info.secure_url]);
+    setPhotos((prevPhotos) => [...prevPhotos, data.info.secure_url]);
   };
 
-  const handleAddProduct = async() => {
-    
-  }
+  const handleAddProduct = async () => {
+    try {
+      const data: ProductData = {
+        category: {
+          id: Array.from(category)[0],
+        },
+        colors,
+        description: descriptions,
+        discountedPrice: parseInt(discountedPrice),
+        titlePrice: parseInt(salePrice),
+        images: photos,
+        title: name,
+        variants,
+      };
+      const result: { status: boolean; data: any } = await addProduct(data);
+      if (result?.status === true) {
+        router.push("/admin/category/all-products");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div>
       <div className="m-10">
@@ -213,13 +239,12 @@ const Page = () => {
                 uploadPreset="qxjurz62"
                 options={{ multiple: true }}
                 //@ts-ignore
-                onUpload={handleUpload}
+                onSuccess={handleUpload}
               >
                 <span className="bg-pp-primary py-3 mt-6 px-5 text-white text-base font-medium rounded-md cursor-pointer">
                   Upload Images
                 </span>
               </CldUploadButton>
-             
             </div>
           </CardBody>
           <CardFooter>
