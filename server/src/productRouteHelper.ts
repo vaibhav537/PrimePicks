@@ -29,3 +29,15 @@ export async function GetProductId(name: string): Promise<ReqResult> {
     return { status: false, id: 0 };
   }
 }
+
+export async function GetAllProducts() {
+  try {
+    const client = await pool.connect();
+    const res = await client.query(helper.getAllProductsQuery);
+    client.release();
+    return { status: true, data: res.rows };
+  } catch (error) {
+    console.error(error);
+    return { status: false, data: [] };
+  }
+}

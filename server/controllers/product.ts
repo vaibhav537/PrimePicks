@@ -1,6 +1,10 @@
 import pool from "../connection/dbConnection";
 import { HELPER } from "../src/Resources";
-import { addProductRouteHelper, GetProductId } from "../src/productRouteHelper";
+import {
+  addProductRouteHelper,
+  GetAllProducts,
+  GetProductId,
+} from "../src/productRouteHelper";
 const helper = new HELPER();
 
 export const addProduct = async (
@@ -31,16 +35,16 @@ export const addProduct = async (
     } = req.body;
 
     // Generate unique product ID
-    let PId = await helper.GenerateId();
+    let PId:string = await helper.GenerateId();
 
     // Get current time for createdAt and updatedAt timestamps
-    let createdAt = helper.getTime("Asia/Kolkata");
-    let updatedAt = helper.getTime("Asia/Kolkata");
+    let createdAt:string = helper.getTime("Asia/Kolkata");
+    let updatedAt:string = helper.getTime("Asia/Kolkata");
     // Set a default value for reviews
-    const reviews = "No reviews yet";
-    const orders = "No orders yet";
+    const reviews:string = "No reviews yet";
+    const orders:bigint[] = [];
 
-    const values: Array<any> = [
+    const values: Array<string | number | bigint[]> = [
       PId,
       title,
       JSON.stringify(description), // Convert description array to JSON
@@ -82,5 +86,17 @@ export const addProduct = async (
       result: false,
       addMsg: helper.errorMsg,
     });
+  }
+};
+
+export const allProducts = async (req: any, res: any) => {
+  try {
+    const resultantData = await GetAllProducts();
+    res
+      .status(200)
+      .send({ msg: "Success", result: true, addMsg: resultantData.data });
+  } catch (error) {
+    pool.end();
+    res.status(500).send({ msg: "Failure", result: false, addMsg: [] });
   }
 };

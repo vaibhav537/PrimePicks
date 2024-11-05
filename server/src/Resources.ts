@@ -19,6 +19,7 @@ class internalQueries {
   public addProductQuery: string = `INSERT INTO public."PrimePicks_Products" (id,title,description,"titlePrice","discountedPrice",colors,variants,images,"Created At","Updated At",reviews,category_id, orders) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`;
   public getProductIdQuery: string = `SELECT id FROM "PrimePicks_Products" WHERE title = $1`;
   public updateCategoryQuery: string = `UPDATE public."PrimePicks_Category" SET products = array_append (products::bigint[], $1) WHERE id = $2;`;
+  public getAllProductsQuery: string = `SELECT * FROM "PrimePicks_Products"`;
 }
 
 //#region class Helper

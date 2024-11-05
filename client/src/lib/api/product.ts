@@ -1,5 +1,5 @@
 import { verifyToken } from "../utils/verifyToken";
-import { createUrl, isAdminStoredJWT, post } from "./apiClients";
+import { createUrl, get, isAdminStoredJWT, post } from "./apiClients";
 const constant: string = "/api/auth";
 const tokenName: string = "adminToken";
 
@@ -26,5 +26,24 @@ export const addProduct = async (
   } catch (error) {
     console.log(error);
     return { status: false, data: 0 };
+  }
+};
+
+export const allProducts = async () => {
+  try {
+    if (!isAdminStoredJWT()) {
+      return { status: false, data: [] };
+    }
+    const token: string = localStorage.getItem(tokenName) || "";
+    if (!(await verifyToken(token))) {
+      return { status: false, data: [] };
+    }
+    const response = await get(createUrl(constant + "/all-products"));
+    return response.status === 200
+      ? { status: true, data: response.data.addMsg }
+      : { status: false, data: [] };
+  } catch (error) {
+    alert("Error Occured !! ");
+    console.log(error);
   }
 };
