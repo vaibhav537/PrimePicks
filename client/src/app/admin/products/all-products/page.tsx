@@ -24,11 +24,10 @@ import {
 import { FaEdit, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { Helper } from "@/lib/utils/HelperClient";
-import { allCategory, deleteCategory } from "@/lib/api/category";
-import { allProducts } from "@/lib/api/product";
+import { allProducts, deleteProduct } from "@/lib/api/product";
 
 type Category = {
-  id: number;
+  id: number; 
   name: string;
 };
 
@@ -109,22 +108,22 @@ const page = () => {
 
   const confirmDelete = async () => {
     if (deleteID) {
-      const res = await deleteCategory(deleteID);
+      const res = await deleteProduct(deleteID);
       if (res.status === true) {
-        const clonedCategories = [...products];
-        const index = clonedCategories.findIndex(
+        const clonedProducts = [...products];
+        const index = clonedProducts.findIndex(
           (category) => category.id === deleteID
         );
         if (index !== -1) {
-          clonedCategories.splice(index, 1);
+          clonedProducts.splice(index, 1);
         }
-        setProducts(clonedCategories);
-        helper.showSuccessMessage("Category deleted");
+        setProducts(clonedProducts);
+        helper.showSuccessMessage("Product deleted");
       } else {
-        helper.showErrorMessage("Error in deleting category");
+        helper.showErrorMessage("Error in deleting product");
       }
     } else {
-      helper.showErrorMessage("Error in deleting category");
+      helper.showErrorMessage("Error in deleting product");
     }
     onClose();
   };

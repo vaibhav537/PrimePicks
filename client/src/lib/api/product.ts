@@ -1,5 +1,5 @@
 import { verifyToken } from "../utils/verifyToken";
-import { createUrl, get, isAdminStoredJWT, post } from "./apiClients";
+import { axiosDelete, createUrl, get, isAdminStoredJWT, post } from "./apiClients";
 const constant: string = "/api/auth";
 const tokenName: string = "adminToken";
 
@@ -45,5 +45,28 @@ export const allProducts = async () => {
   } catch (error) {
     alert("Error Occured !! ");
     console.log(error);
+  }
+};
+
+export const deleteProduct = async (id: string) => {
+  try {
+    if (!isAdminStoredJWT() || id === "") {
+      return { status: false };
+    }
+    const token: string = localStorage.getItem(tokenName) || "";
+    if (!(await verifyToken(token))) {
+      return { status: false };
+    }
+    const response = await axiosDelete(
+      createUrl(constant + `/deleteProduct/${id}`)
+    );
+    if (response.data.result === true) {
+      return { status: true };
+    } else {
+      return { status: false };
+    }
+  } catch (error) {
+    console.log(error);
+    return { status: false };
   }
 };

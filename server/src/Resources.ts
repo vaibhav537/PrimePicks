@@ -20,6 +20,7 @@ class internalQueries {
   public getProductIdQuery: string = `SELECT id FROM "PrimePicks_Products" WHERE title = $1`;
   public updateCategoryQuery: string = `UPDATE public."PrimePicks_Category" SET products = array_append (products::bigint[], $1) WHERE id = $2;`;
   public getAllProductsQuery: string = `SELECT * FROM "PrimePicks_Products"`;
+  public deleteProductByIDQuery: string = `DELETE FROM "PrimePicks_Products" WHERE id =$1`;
 }
 
 //#region class Helper

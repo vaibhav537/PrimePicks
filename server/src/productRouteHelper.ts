@@ -41,3 +41,17 @@ export async function GetAllProducts() {
     return { status: false, data: [] };
   }
 }
+
+export async function DeleteProductByID(id: string) {
+  try {
+    const client = await pool.connect();
+    const res = await client.query(helper.deleteProductByIDQuery, [id]);
+    client.release();
+    if (res) {
+      return { status: true };
+    }
+  } catch (error) {
+    console.log(error);
+    return { status: false };
+  }
+}

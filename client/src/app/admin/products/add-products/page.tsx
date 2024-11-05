@@ -105,7 +105,7 @@ const Page = () => {
       };
       const result: { status: boolean; data: any } = await addProduct(data);
       if (result?.status === true) {
-        router.push("/admin/category/all-products");
+        router.push("/admin/products/all-products");
       }
     } catch (error) {
       console.log(error);

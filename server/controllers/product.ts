@@ -2,6 +2,7 @@ import pool from "../connection/dbConnection";
 import { HELPER } from "../src/Resources";
 import {
   addProductRouteHelper,
+  DeleteProductByID,
   GetAllProducts,
   GetProductId,
 } from "../src/productRouteHelper";
@@ -98,5 +99,23 @@ export const allProducts = async (req: any, res: any) => {
   } catch (error) {
     pool.end();
     res.status(500).send({ msg: "Failure", result: false, addMsg: [] });
+  }
+};
+
+export const deleteProductById = async (
+  req: { params: { id: string } },
+  res: any
+) => {
+  try {
+    const { id } = req.params;
+    const resultantData = await DeleteProductByID(id);
+    if (resultantData?.status === true) {
+      res.status(200).send({ msg: "Success", result: true });
+    } else {
+      res.status(404).send({ msg: "Failure", result: false });
+    }
+  } catch (error) {
+    pool.end();
+    res.status(500).send({ msg: "Failure", result: false });
   }
 };
