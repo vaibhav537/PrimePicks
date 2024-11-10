@@ -55,3 +55,27 @@ export async function DeleteProductByID(id: string) {
     return { status: false };
   }
 }
+
+export async function GetSpecificProduct(id: string) {
+  try {
+    const client = await pool.connect();
+    const res = await client.query(helper.getProductByIdQuery, [id]);
+    client.release();
+    return { status: true, data: res.rows[0] };
+  } catch (error) {
+    console.error(error);
+    return { status: false, data: null };
+  }
+}
+
+export async function UpdateProduct(values: Array<string | Array<string>>) {
+  try {
+    const client = await pool.connect();
+    const res = await client.query(helper.updateProductDetailsQuery, values);
+    client.release();
+    return { status: true, data: res.rows[0].id };
+  } catch (error) {
+    console.log(error);
+    return { status: false, data: null };
+  }
+}

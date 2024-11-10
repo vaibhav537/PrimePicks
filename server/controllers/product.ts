@@ -5,6 +5,8 @@ import {
   DeleteProductByID,
   GetAllProducts,
   GetProductId,
+  GetSpecificProduct,
+  UpdateProduct,
 } from "../src/productRouteHelper";
 const helper = new HELPER();
 
@@ -36,14 +38,14 @@ export const addProduct = async (
     } = req.body;
 
     // Generate unique product ID
-    let PId:string = await helper.GenerateId();
+    let PId: string = await helper.GenerateId();
 
     // Get current time for createdAt and updatedAt timestamps
-    let createdAt:string = helper.getTime("Asia/Kolkata");
-    let updatedAt:string = helper.getTime("Asia/Kolkata");
+    let createdAt: string = helper.getTime("Asia/Kolkata");
+    let updatedAt: string = helper.getTime("Asia/Kolkata");
     // Set a default value for reviews
-    const reviews:string = "No reviews yet";
-    const orders:bigint[] = [];
+    const reviews: string = "No reviews yet";
+    const orders: bigint[] = [];
 
     const values: Array<string | number | bigint[]> = [
       PId,
@@ -117,5 +119,72 @@ export const deleteProductById = async (
   } catch (error) {
     pool.end();
     res.status(500).send({ msg: "Failure", result: false });
+  }
+};
+
+export const productById = async (req: any, res: any) => {
+  try {
+    const resultantData = await GetSpecificProduct(req.params.id);
+
+    if (resultantData.status === true) {
+      res
+        .status(200)
+        .send({ msg: "Success", result: true, addMsg: resultantData.data });
+    }
+  } catch (error) {
+    pool.end();
+    res.status(500).send({ msg: "Failure", result: false, addMsg: null });
+  }
+};
+
+export const updateProductDetails = async (
+  req: {
+    params: { id: string }; // Added 'params' with 'id' type
+    body: {
+      title: string;
+      discountedPrice: string;
+      titlePrice: string;
+      description: Array<string>;
+      colors: Array<string>;
+      variants: Array<string>;
+      categoryID: string;
+    };
+  },
+  res: any
+) => {
+  try {
+    const { id } = req.params;
+    const {
+      title,
+      discountedPrice,
+      titlePrice,
+      description,
+      colors,
+      variants,
+      categoryID,
+    } = req.body;
+    const updatedAt = helper.getTime("Asia/Kolkata");
+    const values = [
+      updatedAt,
+      title,
+      discountedPrice,
+      titlePrice,
+      JSON.stringify(description), // Convert to JSON
+      JSON.stringify(colors), // Convert to JSON
+      JSON.stringify(variants), // Convert to JSON
+      categoryID,
+      id,
+    ];
+    const resultantData = await UpdateProduct(values);
+    if (resultantData.status === true) {
+      res
+        .status(200)
+        .send({ msg: "Success", result: true, addMsg: resultantData.data });
+    } else {
+      res.status(500).send({ msg: "Failure", result: false, addMsg: null });
+    }
+  } catch (error) {
+    pool.end();
+    res.status(500).send({ msg: "Failure", result: false, addMsg: null });
   }
 };

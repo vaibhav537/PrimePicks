@@ -7,7 +7,6 @@ import React, { useState } from "react";
 import { useAppStore } from "../../store/store";
 import { Toaster } from "react-hot-toast";
 import { Helper } from "@/lib/utils/HelperClient";
-
 const Page = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,7 +39,7 @@ const Page = () => {
         <div className="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl ">
-              Login to Your Account
+              Login to ADMIN
             </h1>
             <div className="space-y-4 md:space-y-6">
               <div>
@@ -66,7 +65,7 @@ const Page = () => {
                   htmlFor="password"
                   className="block mb-2 text-sm font-medium text-gray-900 "
                 >
-                  Your Email
+                  Your Password
                 </label>
                 <input
                   type="password"

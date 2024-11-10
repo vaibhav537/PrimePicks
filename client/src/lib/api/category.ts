@@ -1,3 +1,4 @@
+import Router from "next/router";
 import { verifyToken } from "../utils/verifyToken";
 import {
   createUrl,
@@ -17,6 +18,7 @@ export const addCategory = async (name: string) => {
     }
     const token: string = localStorage.getItem(tokenName) || "";
     if (!(await verifyToken(token))) {
+      Router.push("/admin");
       return false;
     }
     const response = await post(createUrl(constant + "/add-category"), {
@@ -36,6 +38,7 @@ export const allCategory = async () => {
     }
     const token: string = localStorage.getItem(tokenName) || "";
     if (!(await verifyToken(token))) {
+      Router.push("/admin");
       return { status: false, data: [] };
     }
     const response = await get(createUrl(constant + "/all-category"));
@@ -56,6 +59,7 @@ export const getCategory = async (id: string) => {
 
     const token: string = localStorage.getItem(tokenName) || "";
     if (!(await verifyToken(token))) {
+      Router.push("/admin");
       return { status: false, data: null };
     }
     const response = await get(createUrl(constant + `/categoryNameById/${id}`));
@@ -75,6 +79,7 @@ export const editCategory = async (id: string, category: string) => {
     }
     const token: string = localStorage.getItem(tokenName) || "";
     if (!(await verifyToken(token))) {
+      Router.push("/admin");
       return { status: false, data: "" };
     }
     const response = await patch(
@@ -83,7 +88,6 @@ export const editCategory = async (id: string, category: string) => {
         name: category,
       }
     );
-    console.log(response);
     if (response.data.result === true) {
       return { status: true, data: response.data.addMsg };
     }
@@ -100,6 +104,7 @@ export const deleteCategory = async (id: string) => {
     }
     const token: string = localStorage.getItem(tokenName) || "";
     if (!(await verifyToken(token))) {
+      Router.push("/admin");
       return { status: false };
     }
     const response = await axiosDelete(

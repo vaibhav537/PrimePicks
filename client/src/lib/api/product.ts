@@ -1,7 +1,17 @@
+import Router from "next/router";
 import { verifyToken } from "../utils/verifyToken";
-import { axiosDelete, createUrl, get, isAdminStoredJWT, post } from "./apiClients";
+import {
+  axiosDelete,
+  createUrl,
+  get,
+  isAdminStoredJWT,
+  patch,
+  post,
+} from "./apiClients";
+
 const constant: string = "/api/auth";
 const tokenName: string = "adminToken";
+
 
 export const addProduct = async (
   data: any
@@ -11,7 +21,8 @@ export const addProduct = async (
     if (!isAdminStoredJWT() || data === null) {
       return { status: false, data: 0 };
     }
-    if (!await verifyToken(token)) {
+    if (!(await verifyToken(token))) {
+      Router.push("/admin");
       return { status: false, data: 0 };
     }
     const response = await post(createUrl(constant + "/add-product"), {
@@ -36,6 +47,7 @@ export const allProducts = async () => {
     }
     const token: string = localStorage.getItem(tokenName) || "";
     if (!(await verifyToken(token))) {
+      Router.push("/admin");
       return { status: false, data: [] };
     }
     const response = await get(createUrl(constant + "/all-products"));
@@ -55,6 +67,7 @@ export const deleteProduct = async (id: string) => {
     }
     const token: string = localStorage.getItem(tokenName) || "";
     if (!(await verifyToken(token))) {
+      Router.push("/admin");
       return { status: false };
     }
     const response = await axiosDelete(
@@ -68,5 +81,54 @@ export const deleteProduct = async (id: string) => {
   } catch (error) {
     console.log(error);
     return { status: false };
+  }
+};
+
+export const getProductByID = async (id: string) => {
+  try {
+    if (!isAdminStoredJWT() || id === "") {
+      return { status: false, data: null };
+    }
+
+    const token: string = localStorage.getItem(tokenName) || "";
+    if (!(await verifyToken(token))) {
+      Router.push("/admin");
+      return { status: false, data: null };
+    }
+    const response = await get(createUrl(constant + `/productById/${id}`));
+    if (response.status === 200) {
+      return { status: true, data: response.data.addMsg };
+    }
+  } catch (error) {
+    console.log(error);
+    return { status: false, data: null };
+  }
+};
+
+export const editProduct = async (id: string, data: any) => {
+  try {
+    // Ensure 'data' is provided and has content; if not, return failure
+    if (!isAdminStoredJWT() || id === "" || !data) {
+      return { status: false, data: "" };
+    }
+
+    const token: string = localStorage.getItem(tokenName) || "";
+    if (!(await verifyToken(token))) {
+      Router.push("/admin");
+      return { status: false, data: "" };
+    }
+
+    const response = await patch(createUrl(constant + `/updateProduct/${id}`), {
+      ...data,
+    });
+
+    if (response.data.result === true) {
+      return { status: true, data: response.data.addMsg };
+    } else {
+      return { status: false, data: null };
+    }
+  } catch (error) {
+    console.log(error);
+    return { status: false, data: null };
   }
 };

@@ -3,7 +3,7 @@ import * as dotEnv from "dotenv";
 import pool from "../connection/dbConnection";
 import jwt from "jsonwebtoken";
 dotEnv.config();
-
+// #region class Queries
 class internalQueries {
   public userInputQuery: string = `INSERT INTO "PrimePicks_Users" (id , username, email, password, phonenumber, firstname, isadmin, lastname, createdat,updatedat) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`;
   public checkIdinDBQuery: string = `SELECT SUM(count) FROM (SELECT COUNT(*) AS count FROM "PrimePicks_Users" WHERE id = $1 UNION ALL SELECT COUNT(*) AS count FROM "PrimePicks_Category" WHERE id = $1 UNION ALL SELECT COUNT(*) AS count FROM "PrimePicks_Products" WHERE id = $1 UNION ALL SELECT COUNT(*) AS count FROM "PrimePicks_Orders" WHERE id = $1) AS combined_count;`;
@@ -16,12 +16,15 @@ class internalQueries {
   public getCategoryNameByIdQuery: string = `SELECT name FROM "PrimePicks_Category" WHERE id = $1`;
   public updateCategoryNameByIdQuery: string = `UPDATE "PrimePicks_Category" SET name = $2, updatedat = $3 WHERE id = $1 RETURNING name`;
   public deleteCategoryByIDQuery: string = `DELETE FROM "PrimePicks_Category" WHERE id =$1`;
-  public addProductQuery: string = `INSERT INTO public."PrimePicks_Products" (id,title,description,"titlePrice","discountedPrice",colors,variants,images,"Created At","Updated At",reviews,category_id, orders) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`;
+  public addProductQuery: string = `INSERT INTO public."PrimePicks_Products" (id,title,description,"titlePrice","discountedPrice",colors,variants,images,createdat,updatedat,reviews,category_id, orders) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`;
   public getProductIdQuery: string = `SELECT id FROM "PrimePicks_Products" WHERE title = $1`;
   public updateCategoryQuery: string = `UPDATE public."PrimePicks_Category" SET products = array_append (products::bigint[], $1) WHERE id = $2;`;
   public getAllProductsQuery: string = `SELECT * FROM "PrimePicks_Products"`;
   public deleteProductByIDQuery: string = `DELETE FROM "PrimePicks_Products" WHERE id =$1`;
+  public getProductByIdQuery: string = `SELECT * FROM "PrimePicks_Products" WHERE id = $1`;
+  public updateProductDetailsQuery: string = `UPDATE "PrimePicks_Products" SET updatedat = $1, title = $2, "discountedPrice" = $3, "titlePrice" = $4, description = $5, colors = $6, variants = $7, category_id = $8 WHERE id = $9 RETURNING id`;
 }
+//#endregion
 
 //#region class Helper
 export class HELPER extends internalQueries {

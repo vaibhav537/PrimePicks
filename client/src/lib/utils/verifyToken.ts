@@ -1,7 +1,6 @@
 "use server";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { logger } from "./Helper";
-
 export const verifyToken = (token: string): JwtPayload | null => {
   try {
     const decoded = jwt.verify(

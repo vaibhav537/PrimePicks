@@ -26,11 +26,6 @@ import { useRouter } from "next/navigation";
 import { Helper } from "@/lib/utils/HelperClient";
 import { allProducts, deleteProduct } from "@/lib/api/product";
 
-type Category = {
-  id: number; 
-  name: string;
-};
-
 const columns = [
   { name: "ID", uid: "id", sortable: true },
   { name: "NAME", uid: "title", sortable: true },
@@ -61,7 +56,7 @@ type Product = {
   count: { order: number };
 };
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const [filterValue, setFilterValue] = React.useState("");
   const [products, setProducts] = useState<Product[]>([]);
@@ -84,13 +79,14 @@ const page = () => {
       setProducts(response?.data);
     };
     fetchData();
+    setPage(1);
   }, []);
 
   const hasSearchFilter = Boolean(filterValue);
 
   const handleEdit = useCallback(
     (id: string) => {
-      router.push(`/admin/category/edit-category/${id}`);
+      router.push(`/admin/products/edit-product/${id}`);
     },
     [router]
   );
@@ -112,7 +108,7 @@ const page = () => {
       if (res.status === true) {
         const clonedProducts = [...products];
         const index = clonedProducts.findIndex(
-          (category) => category.id === deleteID
+          (product) => product.id === deleteID
         );
         if (index !== -1) {
           clonedProducts.splice(index, 1);
@@ -120,10 +116,10 @@ const page = () => {
         setProducts(clonedProducts);
         helper.showSuccessMessage("Product deleted");
       } else {
-        helper.showErrorMessage("Error in deleting product");
+        helper.showErrorMessage("Unable to delete product");
       }
     } else {
-      helper.showErrorMessage("Error in deleting product");
+      helper.showErrorMessage("Unable to delete product");
     }
     onClose();
   };
@@ -161,7 +157,7 @@ const page = () => {
 
   const renderCell = React.useCallback(
     (product: User, columnKey: React.Key) => {
-      const cellValue = product[columnKey as keyof User];
+      const cellValue = product[columnKey as keyof Product];
       switch (columnKey) {
         case "count": {
           return <div>{product.orders.length} </div>;
@@ -169,7 +165,7 @@ const page = () => {
         case "actions":
           return (
             <div className="relative flex justify-center items-center gap-2">
-              <Tooltip content="Edit Category" color="default">
+              <Tooltip content="Edit Product" color="default">
                 <span
                   className="text-lg text-blue-500 hover:text-blue-400 cursor-pointer"
                   onClick={() => handleEdit(product.id)}
@@ -177,7 +173,7 @@ const page = () => {
                   <FaEdit />
                 </span>
               </Tooltip>
-              <Tooltip content="Delete Category" color="danger">
+              <Tooltip content="Delete Product" color="danger">
                 <span
                   className="text-lg text-red-500 hover:text-red-400 cursor-pointer"
                   onClick={() => handleDelete(product)}
@@ -289,7 +285,7 @@ const page = () => {
           isCompact
           showControls
           showShadow
-          color="primary"
+          color="default"
           page={page}
           total={pages}
           onChange={setPage}
@@ -360,7 +356,7 @@ const page = () => {
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Are you sure you want to delete category?
+                Are you sure you want to delete product?
               </ModalHeader>
               <ModalBody>
                 <p>This Action will be irreversible.</p>
@@ -381,4 +377,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
