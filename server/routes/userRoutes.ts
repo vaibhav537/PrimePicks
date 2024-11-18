@@ -19,6 +19,7 @@ import {
   productById,
   updateProductDetails,
 } from "../controllers/product";
+import { allOrders } from "../controllers/orders";
 
 const router = express.Router();
 router.get("/", invalidResponseHandler);
@@ -36,4 +37,5 @@ router.get("/all-products", allProducts);
 router.delete("/deleteProduct/:id", deleteProductById);
 router.get("/productById/:id", productById);
 router.patch("/updateProduct/:id", updateProductDetails);
+router.get("/all-orders", allOrders);
 export default router;

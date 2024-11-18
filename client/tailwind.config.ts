@@ -24,8 +24,13 @@ const config: Config = {
       },
       animation: {
         loader: "ring 2s linear infinite",
+        jump: "jump 0.6s ease-in-out infinite",
       },
       keyframes: {
+        jump: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
         ring: {
           "0%": {
             transform: "rotate(0deg)",

@@ -70,7 +70,7 @@ const Side = () => {
     {
       label: "Orders",
       icon: <FaShoppingCart />,
-      link: "admin/orders",
+      link: "/admin/orders",
     },
   ];
 

@@ -23,6 +23,7 @@ class internalQueries {
   public deleteProductByIDQuery: string = `DELETE FROM "PrimePicks_Products" WHERE id =$1`;
   public getProductByIdQuery: string = `SELECT * FROM "PrimePicks_Products" WHERE id = $1`;
   public updateProductDetailsQuery: string = `UPDATE "PrimePicks_Products" SET updatedat = $1, title = $2, "discountedPrice" = $3, "titlePrice" = $4, description = $5, colors = $6, variants = $7, category_id = $8 WHERE id = $9 RETURNING id`;
+  public getAllOrdersQuery: string = `SELECT o.*, u.username AS user FROM public."PrimePicks_Orders" o JOIN public."PrimePicks_Users" u ON o.users::oid = u.id;`;
 }
 //#endregion
 
