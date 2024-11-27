@@ -2,6 +2,7 @@
 import Loader from "@/components/Loader";
 import { allCategory } from "@/lib/api/category";
 import { editProduct, getProductByID } from "@/lib/api/product";
+import { decrypter } from "@/lib/utils/crypto";
 import {
   Button,
   Card,
@@ -12,7 +13,7 @@ import {
   Select,
   SelectItem,
 } from "@nextui-org/react";
-import { CldUploadButton } from "next-cloudinary";
+import { Helper } from "@/lib/utils/HelperClient";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -48,22 +49,28 @@ const Page = ({ params: { productId } }: { params: { productId: string } }) => {
   const [categories, setCategories] = useState<Categrory[]>([]);
   const [defaultCategory, setDefaultCategory] = useState("");
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const helper = new Helper();
   useEffect(() => {
     const getData = async () => {
-      const product = await getProductByID(productId);
-      if (product?.status === true) {
-        const ProductData = product.data;
-        console.log({ ProductData });
-        setName(ProductData.title);
-        setDescriptions(ProductData.description);
-        setDiscountedPrice(ProductData.discountedPrice);
-        setSalePrice(ProductData.titlePrice);
-        setPhotos(ProductData.images);
-        setVariants(ProductData.variants);
-        setColors(ProductData.colors);
-        setCategory(ProductData.category_id);
-        setDefaultCategory(ProductData.category_id);
-        setIsLoaded(true);
+      const DeID: string | null = decrypter(productId);
+      if (DeID) {
+        const product = await getProductByID(DeID);
+        if (product?.status === true) {
+          const ProductData = product.data;
+          console.log({ ProductData });
+          setName(ProductData.title);
+          setDescriptions(ProductData.description);
+          setDiscountedPrice(ProductData.discountedPrice);
+          setSalePrice(ProductData.titlePrice);
+          setPhotos(ProductData.images);
+          setVariants(ProductData.variants);
+          setColors(ProductData.colors);
+          setCategory(ProductData.category_id);
+          setDefaultCategory(ProductData.category_id);
+          setIsLoaded(true);
+        }
+      } else {
+        helper.showErrorMessage("Couldn't find category");
       }
       const results = await allCategory();
       if (results) {
@@ -136,7 +143,9 @@ const Page = ({ params: { productId } }: { params: { productId: string } }) => {
           <div className="m-10">
             <Card className="p-5">
               <CardHeader>
-                <h2 className="text-3xl "> Update Product: {productId}</h2>
+                <h2 className="text-3xl ">
+                  Update Product: <span className="text-base"> {name}</span>
+                </h2>
               </CardHeader>
               <CardBody>
                 <div className="grid grid-cols-2 gap-10">

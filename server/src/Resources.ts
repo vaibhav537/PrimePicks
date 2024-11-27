@@ -2,6 +2,7 @@ import * as crypto from "crypto";
 import * as dotEnv from "dotenv";
 import pool from "../connection/dbConnection";
 import jwt from "jsonwebtoken";
+import CryptoJS from "crypto-js";
 dotEnv.config();
 // #region class Queries
 class internalQueries {
@@ -30,6 +31,8 @@ class internalQueries {
 //#region class Helper
 export class HELPER extends internalQueries {
   public errorMsg: string = "INTERNAL SERVER ERROR";
+  protected SECRET_KEY: string =
+    process.env.CRYPTO_KEY || "fallback-secret-key";
   public PasswordHasher(password: string): any {
     try {
       const key: any = process.env.KEY;
@@ -150,5 +153,30 @@ export class HELPER extends internalQueries {
       console.error("Error updating record:", err);
     }
   }
+
+  public encrypter = (data: object): string | null => {
+    try {
+      const cipherText = CryptoJS.AES.encrypt(
+        JSON.stringify(data),
+        this.SECRET_KEY
+      ).toString();
+      return encodeURIComponent(cipherText);
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  };
+
+  public decrypter = (cipherText: string): object | null => {
+    try {
+      const decodedCipherText = decodeURIComponent(cipherText);
+      const bytes = CryptoJS.AES.decrypt(decodedCipherText, this.SECRET_KEY);
+      const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+      return decryptedData;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  };
 }
 //#endregion

@@ -25,6 +25,7 @@ import { FaEdit, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { Helper } from "@/lib/utils/HelperClient";
 import { allProducts, deleteProduct } from "@/lib/api/product";
+import { encrypter } from "@/lib/utils/crypto";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -86,7 +87,12 @@ const Page = () => {
 
   const handleEdit = useCallback(
     (id: string) => {
-      router.push(`/admin/products/edit-product/${id}`);
+      const newID: string | null = encrypter(id);
+      if (newID) {
+        router.push(`/admin/products/edit-product/${newID}`);
+      } else {
+        helper.showErrorMessage("Try Again Later...");
+      }
     },
     [router]
   );

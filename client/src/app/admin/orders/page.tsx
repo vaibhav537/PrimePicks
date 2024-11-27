@@ -22,6 +22,7 @@ import { Helper } from "@/lib/utils/HelperClient";
 import { getAllOrders } from "@/lib/api/orders";
 import { FaEye } from "react-icons/fa6";
 import SLoader from "@/components/SLoader";
+import { encrypter } from "@/lib/utils/crypto";
 
 const columns = [
   { name: "ORDER ID", uid: "id" },
@@ -87,6 +88,14 @@ const Page = () => {
     setPage(1);
   }, []);
 
+  const handleView = async (id: string) => {
+    const newId: string | null = encrypter(id);
+    if (newId) {
+      router.push(`/admin/orders/${newId}`);
+    } else {
+      helper.showErrorMessage("Try Again Later...");
+    }
+  };
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = columns;
@@ -182,7 +191,7 @@ const Page = () => {
                   size="sm"
                   variant="light"
                   color="primary"
-                  onClick={() => router.push(`/admin/orders/${order.id}`)}
+                  onClick={() => handleView(order.id)}
                 >
                   <FaEye />
                 </Button>

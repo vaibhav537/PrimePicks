@@ -25,6 +25,7 @@ import { FaEdit, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { Helper } from "@/lib/utils/HelperClient";
 import { allCategory, deleteCategory } from "@/lib/api/category";
+import { encrypter } from "@/lib/utils/crypto";
 
 type Category = {
   id: number;
@@ -69,7 +70,12 @@ const page = () => {
 
   const handleEdit = useCallback(
     (id: string) => {
-      router.push(`/admin/category/edit-category/${id}`);
+      const newID: string | null = encrypter(id);
+      if (newID) {
+        router.push(`/admin/category/edit-category/${newID}`);
+      } else {
+        helper.showErrorMessage("Try again Later...");
+      }
     },
     [router]
   );
@@ -143,7 +149,6 @@ const page = () => {
       const cellValue = category[columnKey as keyof User];
       switch (columnKey) {
         case "products": {
-          console.log({ category });
           return <div>{category.product_count} </div>;
         }
         case "actions":

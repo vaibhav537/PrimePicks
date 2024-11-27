@@ -12,6 +12,7 @@ import {
 } from "@nextui-org/react";
 import { addCategory, editCategory, getCategory } from "@/lib/api/category";
 import { useRouter } from "next/navigation";
+import { decrypter } from "@/lib/utils/crypto";
 
 const Page = ({
   params: { categoryId },
@@ -24,8 +25,13 @@ const Page = ({
 
   useEffect(() => {
     const getData = async () => {
-      const response = await getCategory(categoryId);
-      setCategory(response?.data);
+      const DeID: string | null = decrypter(categoryId);
+      if (DeID) {
+        const response = await getCategory(DeID);
+        setCategory(response?.data);
+      } else {
+        helper.showErrorMessage("Couldn't find category");
+      }
     };
 
     if (categoryId) {
