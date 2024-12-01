@@ -1,5 +1,5 @@
 import React from "react";
-import { ProductType } from "../page";
+import { ProductType } from "@/app/admin/orders/[orderId]/page";
 import Image from "next/image";
 
 const Product = ({ productData }: { productData: ProductType }) => {

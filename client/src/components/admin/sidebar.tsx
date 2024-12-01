@@ -13,6 +13,7 @@ import {
   SubMenu,
 } from "react-pro-sidebar";
 import Image from "next/image";
+import { LuLogOut } from "react-icons/lu";
 
 const Side = () => {
   const router = useRouter();
@@ -141,6 +142,7 @@ const Side = () => {
               )}
             </React.Fragment>
           ))}
+          <MenuItem icon={<LuLogOut/>} active = {selectedItem === "/admin/logout"} onClick={() => handleItemClick("/admin/logout")}>Log Out</MenuItem>
         </Menu>
       </Sidebar>
     </div>
