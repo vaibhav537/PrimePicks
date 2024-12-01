@@ -25,6 +25,8 @@ class internalQueries {
   public getProductByIdQuery: string = `SELECT * FROM "PrimePicks_Products" WHERE id = $1`;
   public updateProductDetailsQuery: string = `UPDATE "PrimePicks_Products" SET updatedat = $1, title = $2, "discountedPrice" = $3, "titlePrice" = $4, description = $5, colors = $6, variants = $7, category_id = $8 WHERE id = $9 RETURNING id`;
   public getAllOrdersQuery: string = `SELECT o.*, u.username AS user FROM public."PrimePicks_Orders" o JOIN public."PrimePicks_Users" u ON o.users::oid = u.id;`;
+  public getOrderDetailsByIDQuery: string = `WITH order_products AS (SELECT po.id AS order_id, UNNEST(po.products) AS product_id FROM public."PrimePicks_Orders" po WHERE po.id = $1) SELECT po.id AS "orderId", po."createdAt", po."updatedAt", po.paymentintent, po."paymentStatus" AS "paymentStatus", po.price, po.status AS "status", JSON_BUILD_OBJECT('id', pu.id::TEXT, 'username', pu.username, 'email', pu.email) AS "user", JSON_AGG(JSON_BUILD_OBJECT('id', pp.id::TEXT, 'categoryId', pp.category_id::TEXT, 'title', pp.title, 'description', pp.description, 'colors', pp.colors, 'images', pp.images, 'createdAt', pp.createdat, 'updatedAt', pp.updatedat, 'salePrice', pp."titlePrice", 'discountedPrice', pp."discountedPrice", 'variants', pp.variants)) AS "products" FROM public."PrimePicks_Orders" po JOIN public."PrimePicks_Users" pu ON po.users = pu.id::TEXT LEFT JOIN order_products op ON po.id = op.order_id LEFT JOIN public."PrimePicks_Products" pp ON op.product_id = pp.id WHERE po.id = $1 GROUP BY po.id, pu.id;`;
+  public updateOrderPaymentStatusQuery: string = `UPDATE public."PrimePicks_Orders" SET "paymentStatus" = $2 WHERE id = $1; `;
 }
 //#endregion
 
@@ -154,12 +156,9 @@ export class HELPER extends internalQueries {
     }
   }
 
-  public encrypter = (data: object): string | null => {
+  public encrypter = (data: string): string | null => {
     try {
-      const cipherText = CryptoJS.AES.encrypt(
-        JSON.stringify(data),
-        this.SECRET_KEY
-      ).toString();
+      const cipherText = CryptoJS.AES.encrypt(data, this.SECRET_KEY).toString();
       return encodeURIComponent(cipherText);
     } catch (err) {
       console.error(err);
@@ -167,12 +166,11 @@ export class HELPER extends internalQueries {
     }
   };
 
-  public decrypter = (cipherText: string): object | null => {
+  public decrypter = (cipherText: string): string | null => {
     try {
       const decodedCipherText = decodeURIComponent(cipherText);
       const bytes = CryptoJS.AES.decrypt(decodedCipherText, this.SECRET_KEY);
-      const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-      return decryptedData;
+      return bytes.toString(CryptoJS.enc.Utf8);
     } catch (err) {
       console.error(err);
       return null;

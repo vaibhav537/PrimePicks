@@ -13,12 +13,15 @@ import {
 } from "@nextui-org/react";
 import { addCategory } from "@/lib/api/category";
 import { useRouter } from "next/navigation";
+import { verifyToken } from "@/lib/utils/verifyToken";
 
 const page = () => {
   const [category, setCategory] = useState("");
   const router = useRouter();
   const helper = new Helper();
+  const token = localStorage.getItem(helper.tokenName);
   const handleClick = async () => {
+    if (!token || !(await verifyToken(token))) router.push("/admin");
     const result = await addCategory(category);
     if (result) {
       router.push("/admin/category/all-category");

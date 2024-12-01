@@ -10,8 +10,9 @@ import {
   Input,
   Button,
 } from "@nextui-org/react";
-import { addCategory, editCategory, getCategory } from "@/lib/api/category";
+import { editCategory, getCategory } from "@/lib/api/category";
 import { useRouter } from "next/navigation";
+import { verifyToken } from "@/lib/utils/verifyToken";
 import { decrypter } from "@/lib/utils/crypto";
 
 const Page = ({
@@ -22,11 +23,12 @@ const Page = ({
   const [category, setCategory] = useState("");
   const router = useRouter();
   const helper = new Helper();
-
+  const token = localStorage.getItem(helper.tokenName);
   useEffect(() => {
     const getData = async () => {
       const DeID: string | null = decrypter(categoryId);
       if (DeID) {
+        if (!token || !(await verifyToken(token))) router.push("/admin");
         const response = await getCategory(DeID);
         setCategory(response?.data);
       } else {
@@ -40,6 +42,7 @@ const Page = ({
   }, [categoryId]);
 
   const handleClick = async () => {
+    if (!token || !(await verifyToken(token))) router.push("/admin");
     const result = await editCategory(categoryId, category);
     console.log(result);
     if (result?.status === true) {

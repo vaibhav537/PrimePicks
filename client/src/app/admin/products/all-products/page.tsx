@@ -25,6 +25,7 @@ import { FaEdit, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { Helper } from "@/lib/utils/HelperClient";
 import { allProducts, deleteProduct } from "@/lib/api/product";
+import { verifyToken } from "@/lib/utils/verifyToken";
 import { encrypter } from "@/lib/utils/crypto";
 
 const columns = [
@@ -73,9 +74,10 @@ const Page = () => {
   const [page, setPage] = React.useState(1);
   const [deleteID, setDeleteID] = React.useState(null);
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-
+  const token = localStorage.getItem(helper.tokenName);
   useEffect(() => {
     const fetchData = async () => {
+      if (!token || !(await verifyToken(token))) router.push("/admin");
       const response = await allProducts();
       setProducts(response?.data);
     };
@@ -110,6 +112,7 @@ const Page = () => {
 
   const confirmDelete = async () => {
     if (deleteID) {
+      if (!token || !(await verifyToken(token))) router.push("/admin");
       const res = await deleteProduct(deleteID);
       if (res.status === true) {
         const clonedProducts = [...products];

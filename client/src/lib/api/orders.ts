@@ -1,17 +1,9 @@
-import Router from "next/router";
-import { verifyToken } from "../utils/verifyToken";
-import { createUrl, get, patch } from "./apiClients";
+import { createUrl, get, isAdminStoredJWT, patch } from "./apiClients";
 import { AxiosError, AxiosPromise, AxiosResponse } from "axios";
 const constant: string = "/api/auth";
-const tokenName: string = "adminToken";
 
 export const getAllOrders = async () => {
   try {
-    const token: string = localStorage.getItem(tokenName) || "";
-    if (!(await verifyToken(token))) {
-      Router.push("/admin");
-      return { status: false, data: [] };
-    }
     const response = await get(createUrl(constant + "/all-orders"));
     return response.status === 200
       ? { status: true, data: response.data.addMsg }
@@ -24,9 +16,7 @@ export const getAllOrders = async () => {
 
 export const getOrder = async (id: string) => {
   try {
-    const token: string = localStorage.getItem(tokenName) || "";
-    if (!(await verifyToken(token))) {
-      Router.push("/admin");
+    if (!isAdminStoredJWT() || id === "") {
       return { status: false, data: null };
     }
     const response = await get(createUrl(constant + `/orderById/${id}`));
@@ -41,12 +31,10 @@ export const getOrder = async (id: string) => {
 
 export const updateOrderPaymentStatus = async (
   paymentStatus: boolean,
-  orderID: string
+  orderID: string,
 ): Promise<AxiosResponse | AxiosError> => {
   try {
-    const token: string = localStorage.getItem(tokenName) || "";
-    if (!(await verifyToken(token))) {
-      Router.push("/admin");
+    if (!isAdminStoredJWT()) {
       throw new Error("Unauthorized");
     }
     const response = await patch(

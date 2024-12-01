@@ -1,5 +1,3 @@
-import Router from "next/router";
-import { verifyToken } from "../utils/verifyToken";
 import {
   axiosDelete,
   createUrl,
@@ -10,19 +8,13 @@ import {
 } from "./apiClients";
 
 const constant: string = "/api/auth";
-const tokenName: string = "adminToken";
 
 
 export const addProduct = async (
   data: any
 ): Promise<{ status: boolean; data: any }> => {
   try {
-    const token: string = localStorage.getItem(tokenName) || "";
     if (!isAdminStoredJWT() || data === null) {
-      return { status: false, data: 0 };
-    }
-    if (!(await verifyToken(token))) {
-      Router.push("/admin");
       return { status: false, data: 0 };
     }
     const response = await post(createUrl(constant + "/add-product"), {
@@ -45,11 +37,7 @@ export const allProducts = async () => {
     if (!isAdminStoredJWT()) {
       return { status: false, data: [] };
     }
-    const token: string = localStorage.getItem(tokenName) || "";
-    if (!(await verifyToken(token))) {
-      Router.push("/admin");
-      return { status: false, data: [] };
-    }
+
     const response = await get(createUrl(constant + "/all-products"));
     return response.status === 200
       ? { status: true, data: response.data.addMsg }
@@ -65,11 +53,7 @@ export const deleteProduct = async (id: string) => {
     if (!isAdminStoredJWT() || id === "") {
       return { status: false };
     }
-    const token: string = localStorage.getItem(tokenName) || "";
-    if (!(await verifyToken(token))) {
-      Router.push("/admin");
-      return { status: false };
-    }
+
     const response = await axiosDelete(
       createUrl(constant + `/deleteProduct/${id}`)
     );
@@ -89,12 +73,6 @@ export const getProductByID = async (id: string) => {
     if (!isAdminStoredJWT() || id === "") {
       return { status: false, data: null };
     }
-
-    const token: string = localStorage.getItem(tokenName) || "";
-    if (!(await verifyToken(token))) {
-      Router.push("/admin");
-      return { status: false, data: null };
-    }
     const response = await get(createUrl(constant + `/productById/${id}`));
     if (response.status === 200) {
       return { status: true, data: response.data.addMsg };
@@ -109,12 +87,6 @@ export const editProduct = async (id: string, data: any) => {
   try {
     // Ensure 'data' is provided and has content; if not, return failure
     if (!isAdminStoredJWT() || id === "" || !data) {
-      return { status: false, data: "" };
-    }
-
-    const token: string = localStorage.getItem(tokenName) || "";
-    if (!(await verifyToken(token))) {
-      Router.push("/admin");
       return { status: false, data: "" };
     }
 

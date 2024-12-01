@@ -25,6 +25,7 @@ import { FaEdit, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { Helper } from "@/lib/utils/HelperClient";
 import { allCategory, deleteCategory } from "@/lib/api/category";
+import { verifyToken } from "@/lib/utils/verifyToken";
 import { encrypter } from "@/lib/utils/crypto";
 
 type Category = {
@@ -54,12 +55,14 @@ const page = () => {
     direction: "ascending",
   });
   const helper = new Helper();
+  const token = localStorage.getItem(helper.tokenName);
   const [page, setPage] = React.useState(1);
   const [deleteID, setDeleteID] = React.useState(null);
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!token || !(await verifyToken(token))) router.push("/admin");
       const response = await allCategory();
       setCategories(response?.data);
     };
@@ -93,6 +96,7 @@ const page = () => {
 
   const confirmDelete = async () => {
     if (deleteID) {
+      if (!token || !(await verifyToken(token))) router.push("/admin");
       const res = await deleteCategory(deleteID);
       if (res.status === true) {
         const clonedCategories = [...categories];

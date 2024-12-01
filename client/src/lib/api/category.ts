@@ -1,5 +1,3 @@
-import Router from "next/router";
-import { verifyToken } from "../utils/verifyToken";
 import {
   createUrl,
   get,
@@ -9,18 +7,13 @@ import {
   axiosDelete,
 } from "./apiClients";
 const constant: string = "/api/auth";
-const tokenName: string = "adminToken";
 
 export const addCategory = async (name: string) => {
   try {
     if (!isAdminStoredJWT() || name === "") {
       return false;
     }
-    const token: string = localStorage.getItem(tokenName) || "";
-    if (!(await verifyToken(token))) {
-      Router.push("/admin");
-      return false;
-    }
+
     const response = await post(createUrl(constant + "/add-category"), {
       categoryName: name,
     });
@@ -36,11 +29,7 @@ export const allCategory = async () => {
     if (!isAdminStoredJWT()) {
       return { status: false, data: [] };
     }
-    const token: string = localStorage.getItem(tokenName) || "";
-    if (!(await verifyToken(token))) {
-      Router.push("/admin");
-      return { status: false, data: [] };
-    }
+
     const response = await get(createUrl(constant + "/all-category"));
     return response.status === 200
       ? { status: true, data: response.data.addMsg }
@@ -57,11 +46,6 @@ export const getCategory = async (id: string) => {
       return { status: false, data: null };
     }
 
-    const token: string = localStorage.getItem(tokenName) || "";
-    if (!(await verifyToken(token))) {
-      Router.push("/admin");
-      return { status: false, data: null };
-    }
     const response = await get(createUrl(constant + `/categoryNameById/${id}`));
     if (response.status === 200) {
       return { status: true, data: response.data.addMsg };
@@ -75,11 +59,6 @@ export const getCategory = async (id: string) => {
 export const editCategory = async (id: string, category: string) => {
   try {
     if (!isAdminStoredJWT() || id === "" || category) {
-      return { status: false, data: "" };
-    }
-    const token: string = localStorage.getItem(tokenName) || "";
-    if (!(await verifyToken(token))) {
-      Router.push("/admin");
       return { status: false, data: "" };
     }
     const response = await patch(
@@ -100,11 +79,6 @@ export const editCategory = async (id: string, category: string) => {
 export const deleteCategory = async (id: string) => {
   try {
     if (!isAdminStoredJWT() || id === "") {
-      return { status: false };
-    }
-    const token: string = localStorage.getItem(tokenName) || "";
-    if (!(await verifyToken(token))) {
-      Router.push("/admin");
       return { status: false };
     }
     const response = await axiosDelete(

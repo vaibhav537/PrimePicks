@@ -2,7 +2,6 @@
 import Loader from "@/components/Loader";
 import { allCategory } from "@/lib/api/category";
 import { editProduct, getProductByID } from "@/lib/api/product";
-import { decrypter } from "@/lib/utils/crypto";
 import {
   Button,
   Card,
@@ -16,6 +15,8 @@ import {
 import { Helper } from "@/lib/utils/HelperClient";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { verifyToken } from "@/lib/utils/verifyToken";
+import { decrypter } from "@/lib/utils/crypto";
 
 interface ProductData {
   categoryID: string;
@@ -50,10 +51,12 @@ const Page = ({ params: { productId } }: { params: { productId: string } }) => {
   const [defaultCategory, setDefaultCategory] = useState("");
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const helper = new Helper();
+  const token = localStorage.getItem(helper.tokenName);
   useEffect(() => {
     const getData = async () => {
       const DeID: string | null = decrypter(productId);
       if (DeID) {
+        if (!token || !(await verifyToken(token))) router.push("/admin");
         const product = await getProductByID(DeID);
         if (product?.status === true) {
           const ProductData = product.data;
@@ -72,6 +75,7 @@ const Page = ({ params: { productId } }: { params: { productId: string } }) => {
       } else {
         helper.showErrorMessage("Couldn't find category");
       }
+      if (!token || !(await verifyToken(token))) router.push("/admin");
       const results = await allCategory();
       if (results) {
         const resultsArray = results.data;
@@ -124,6 +128,7 @@ const Page = ({ params: { productId } }: { params: { productId: string } }) => {
         title: name,
         variants,
       };
+      if (!token || !(await verifyToken(token))) router.push("/admin");
       const result: { status: boolean; data: any } = await editProduct(
         productId,
         data

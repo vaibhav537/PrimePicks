@@ -1,6 +1,8 @@
 "use client";
 import { allCategory } from "@/lib/api/category";
 import { addProduct } from "@/lib/api/product";
+import { Helper } from "@/lib/utils/HelperClient";
+import { verifyToken } from "@/lib/utils/verifyToken";
 import {
   Button,
   Card,
@@ -47,9 +49,11 @@ const Page = () => {
   const [color, setColor] = useState<string>("");
   const [category, setCategory] = useState<Set<string>>(new Set());
   const [categories, setCategories] = useState<Categrory[]>([]);
-
+  const helper =  new Helper();
+  const token = localStorage.getItem(helper.tokenName);
   useEffect(() => {
     const getData = async () => {
+      if (!token || !(await verifyToken(token))) router.push("/admin");
       const results = await allCategory();
       if (results) {
         const resultsArray = results.data;
@@ -103,6 +107,7 @@ const Page = () => {
         title: name,
         variants,
       };
+      if (!token || !(await verifyToken(token))) router.push("/admin");
       const result: { status: boolean; data: any } = await addProduct(data);
       if (result?.status === true) {
         router.push("/admin/products/all-products");

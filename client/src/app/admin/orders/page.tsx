@@ -30,7 +30,7 @@ const columns = [
   { name: "PRODUCTS", uid: "count" },
   { name: "PRICE", uid: "price", sortable: true },
   { name: "ORDER DATE", uid: "createdAt" },
-  { name: "PAYMENT TYPE", uid: "paymentIntent" },
+  { name: "PAYMENT TYPE", uid: "paymentintent" },
   { name: "PAYMENT STATUS", uid: "paymentStatus", sortable: true },
   { name: "ACTIONS", uid: "actions" },
 ];
@@ -53,7 +53,7 @@ interface User {
 interface OrdersType {
   createdAt: string;
   id: string;
-  paymentIntent: string;
+  paymentintent: string;
   paymentStatus: boolean;
   price: number;
   status: Status;
@@ -112,7 +112,7 @@ const Page = () => {
       return (
         user.toLowerCase().includes(searchValue) ||
         order.id.toLowerCase().includes(searchValue) ||
-        order.paymentIntent.toLowerCase().includes(searchValue)
+        order.paymentintent.toLowerCase().includes(searchValue)
       );
     });
   }, [orders, filterValue, hasSearchFilter]);
@@ -170,7 +170,7 @@ const Page = () => {
             </Chip>
           );
         }
-        case "paymentIntent": {
+        case "paymentintent": {
           return (
             <Chip
               className="capitalize"
@@ -351,7 +351,7 @@ const Page = () => {
           )}
         </TableHeader>
         <TableBody
-          emptyContent={<SLoader text="LOADING ..." />}
+          emptyContent={<SLoader text="LOADING ORDERS ..." />}
           items={sortedItems}
         >
           {(item: OrdersType) => (

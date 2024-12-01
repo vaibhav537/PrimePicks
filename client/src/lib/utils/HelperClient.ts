@@ -66,6 +66,7 @@ export async function userLogin(password: string, email: string) {
 }
 
 export class Helper {
+  public tokenName: string = "adminToken";
   public showErrorMessage = (message: string) => {
     toast.dismiss();
     toast.error(message, {
