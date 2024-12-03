@@ -6,6 +6,8 @@ import Loader from "@/components/Loader";
 import Stats from "@/components/admin/stats";
 import { GET } from "@/lib/api/dashboardRoute";
 import DailyRevenue from "@/components/admin/DailyRevenue";
+import MonthlySales from "@/components/admin/MonthlySales";
+import CategorySales from "@/components/admin/CategorySales";
 
 interface Stats {
   category_count: number;
@@ -14,18 +16,41 @@ interface Stats {
   order_count: number;
 }
 
+interface Revenue {
+  total_revenue: number;
+}
+
+interface RevenueData {
+  order_date: string;
+  daily_revenue: number;
+}
+
+interface RecentOrders {
+  order_id: number;
+  order_price: number;
+  user_name: string;
+}
+
+interface TopCategories {
+  category_id: number;
+  category_name: string;
+  total_revenue: number;
+}
+
+interface YearlySales {
+  month: string;
+  sales: number;
+}
+
 interface DashboardData {
   stats: Stats;
-  revenue: {total_revenue: number}
-  revenueData: Array<{ date: string; revenue: number }>;
-  recentOrders: Array<{
-    id: number;
-    price: number;
-    user: { username: string };
-  }>;
-  topCategories: Array<{ id: number; name: string; revenue: number }>;
-  yearlySales: Array<{ month: string; sales: number }>;
+  revenue: Revenue;
+  revenueData: RevenueData[];
+  recentOrders: RecentOrders[];
+  topCategories: TopCategories[];
+  yearlySales: YearlySales[];
 }
+
 
 const Page: React.FC = () => {
   const helper = new Helper();
@@ -78,7 +103,28 @@ const Page: React.FC = () => {
             <CardHeader className="text-lg m-2 font-semibold">
               Daily Revenue
             </CardHeader>
-            <DailyRevenue data= {dashboardData.revenueData}/>
+            <DailyRevenue
+              data={dashboardData.revenueData.map((item) => ({
+                order_date: item.order_date,
+                daily_revenue: item.daily_revenue,
+              }))}
+            />
+          </Card>
+        </div>
+        <div className="h-full">
+          <Card className="h-full px-5">
+            <CardHeader className="text-lg m-2 font-semibold">
+              Monthy Sales
+            </CardHeader>
+            <MonthlySales data={dashboardData.yearlySales}/>
+          </Card>
+        </div>
+        <div className="h-full">
+          <Card className="h-full px-5">
+            <CardHeader className="text-lg m-2 font-semibold">
+              Sale by Category
+            </CardHeader>
+            {/* <CategorySales data={dashboardData.topCategories}/> */}
           </Card>
         </div>
       </div>

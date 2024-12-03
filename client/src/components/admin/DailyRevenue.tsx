@@ -1,4 +1,3 @@
-import { Tooltip } from "@nextui-org/react";
 import dynamic from "next/dynamic";
 import React from "react";
 import {
@@ -6,25 +5,39 @@ import {
   AreaChart,
   Legend,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
 
-const DailyRevenue = ({
-  data,
-}: {
-  data: { date: string; revenue: number }[];
-}) => {
+interface DailyRevenueProps {
+  data: Array<{
+    order_date: string;
+    daily_revenue: number;
+  }>;
+}
+
+const DailyRevenue: React.FC<DailyRevenueProps> = ({ data }) => {
+  console.log("Daily Revenue Data:", data);
+
   return (
     <ResponsiveContainer height="100%" width="100%">
       <AreaChart data={data}>
-        <XAxis dataKey="date" />
+        <XAxis
+          dataKey="order_date"
+          tickFormatter={(tick) => new Date(tick).toLocaleDateString()}
+        />
         <YAxis />
-        <Tooltip />
+        <Tooltip
+          formatter={(value: any) => [`$${value}`, "Revenue"]}
+          labelFormatter={(label: any) =>
+            `Date: ${new Date(label).toLocaleDateString()}`
+          }
+        />
         <Legend />
         <Area
           type="monotone"
-          dataKey="revenue"
+          dataKey="daily_revenue"
           fill="#ffb700"
           stroke="#ffb700"
         />

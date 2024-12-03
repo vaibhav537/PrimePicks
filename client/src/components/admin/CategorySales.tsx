@@ -4,7 +4,7 @@ import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 const CategorySales = ({
   data,
 }: {
-  data: { id: string; name: string; revenue: number }[];
+  data: { id: number; name: string; revenue: number }[];
 }) => {
   return (
     <div style={{ width: "100%", height: "100%" }} className="">
