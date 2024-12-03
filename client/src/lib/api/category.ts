@@ -76,6 +76,8 @@ export const editCategory = async (id: string, category: string) => {
   }
 };
 
+
+
 export const deleteCategory = async (id: string) => {
   try {
     if (!isAdminStoredJWT() || id === "") {

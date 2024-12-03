@@ -20,6 +20,7 @@ import {
   updateProductDetails,
 } from "../controllers/product";
 import { allOrders, orderById, updateOrderById } from "../controllers/orders";
+import { getDashboardData } from "../controllers/dashboard";
 
 const router = express.Router();
 router.get("/", invalidResponseHandler);
@@ -40,4 +41,5 @@ router.patch("/updateProduct/:id", updateProductDetails);
 router.get("/all-orders", allOrders);
 router.get("/orderById/:id", orderById);
 router.patch("/orderById/:id", updateOrderById);
+router.get("/dashboard-stats", getDashboardData)
 export default router;

@@ -1,0 +1,44 @@
+import { NextResponse } from "next/server";
+import { createUrl, get } from "./apiClients";
+import { AxiosResponse } from "axios";
+
+interface DashboardData {
+  stats: {
+    category: number;
+    products: number;
+    users: number;
+    orders: number;
+    revenue: number;
+  };
+  revenueData: Array<{ date: string; revenue: number }>;
+  recentOrders: Array<{
+    id: number;
+    price: number;
+    user: { username: string };
+  }>;
+  top5Categories: Array<{
+    id: number;
+    name: string;
+    revenue: number;
+  }>;
+  yearlySalesData: Array<{ month: string; sales: number }>;
+}
+
+const constant: string = "/api/auth";
+export async function GET() {
+  try {
+    const response: AxiosResponse<DashboardData> = await get(
+      createUrl(constant + "/dashboard-stats")
+    );
+    return NextResponse.json(response.data);
+  } catch (err: unknown) {
+    console.error(
+      "Error fetching dashboard data:",
+      (err as Error).message || err
+    );
+    return NextResponse.json(
+      { message: "Error fetching dashboard data" },
+      { status: 500 }
+    );
+  }
+}
