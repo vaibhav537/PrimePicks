@@ -4,23 +4,29 @@ import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 const CategorySales = ({
   data,
 }: {
-  data: { id: number; name: string; revenue: number }[];
+  data: { category_id: number; category_name: string; total_revenue: number }[];
 }) => {
+  console.log("CategorySales", data);
   return (
-    <div style={{ width: "100%", height: "100%" }} className="">
+    <div style={{ width: "100%", height: "30vh" }} className="">
       <ResponsiveContainer height="100%" width="100%">
         <PieChart>
           <Pie
             scale={4}
             data={data}
-            dataKey="revenue"
+            dataKey="total_revenue"
             cx={300}
             cy={150}
             outerRadius={100}
             fill="#ffb700"
             label
           />
-          <Tooltip />
+          <Tooltip
+            formatter={(value: any) => [`₹${value}`, "Revenue"]}
+            labelFormatter={(label: any) =>
+              `Date: ${new Date(label).toLocaleDateString()}`
+            }
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>

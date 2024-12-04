@@ -111,9 +111,12 @@ const Page = () => {
       const result: { status: boolean; data: any } = await addProduct(data);
       if (result?.status === true) {
         router.push("/admin/products/all-products");
+      }else{
+        helper.showErrorMessage("Error adding product") 
       }
     } catch (error) {
       console.log(error);
+      helper.showErrorMessage("Error adding product")
     }
   };
 

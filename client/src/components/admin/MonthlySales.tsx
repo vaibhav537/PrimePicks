@@ -12,16 +12,26 @@ import {
 const MonthlySales = ({
   data,
 }: {
-  data: { month: string; sales: number }[];
+  data: {
+    avg_order_value: number;
+    sales_month: string;
+    total_orders: number;
+    total_sales: number;
+  }[];
 }) => {
   return (
     <ResponsiveContainer height="100%" width="100%">
       <BarChart data={data}>
-        <XAxis dataKey="month" />
+        <XAxis dataKey="sales_month" />
         <YAxis />
-        <Tooltip />
+        <Tooltip
+          formatter={(value: any) => [`₹${value}`, "Revenue"]}
+          labelFormatter={(label: any) =>
+            `Date: ${new Date(label).toLocaleDateString()}`
+          }
+        />
         <Legend />
-        <Bar dataKey="sales" fill="#ffb700" stroke="#ffb700" />
+        <Bar dataKey="total_sales" fill="#ffb700" stroke="#ffb700" />
       </BarChart>
     </ResponsiveContainer>
   );

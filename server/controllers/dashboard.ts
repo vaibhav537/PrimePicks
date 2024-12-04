@@ -11,15 +11,14 @@ export const getDashboardData = async (req:any, res:any): Promise<void> => {
     const revenueDataResult = await client.query(helper.revenueDataQuery);
     const recentOrdersResult = await client.query(helper.recentOrdersQuery);
     const topCategoriesResult = await client.query(helper.topCategoriesQuery);
-    const yearlySalesResult = await client.query(helper.yearlySalesQuery);
-
+    const monthlySalesResult = await client.query(helper.monthlySalesQuery);
     res.json({
         stats: statsResult.rows[0],
         revenue: revenueResult.rows[0],
         revenueData: revenueDataResult.rows,
         recentOrders: recentOrdersResult.rows,
         topCategories: topCategoriesResult.rows,
-        yearlySales: yearlySalesResult.rows,
+        monthlySales: monthlySalesResult.rows,
       });
   } catch (error) {
     console.error(error);

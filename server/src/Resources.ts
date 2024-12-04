@@ -33,7 +33,7 @@ class internalQueries {
   public revenueQuery: string = `SELECT COALESCE(SUM(price), 0) AS total_revenue FROM "PrimePicks_Orders" WHERE "paymentStatus" = true;`;
   public revenueDataQuery: string = `SELECT DATE("createdAt") AS order_date, SUM(price) AS daily_revenue FROM "PrimePicks_Orders" WHERE "paymentStatus" = true GROUP BY DATE("createdAt") ORDER BY DATE("createdAt") DESC LIMIT 30;`;
   public recentOrdersQuery: string = `SELECT o.id AS order_id, o.price AS order_price, u.username AS user_name FROM "PrimePicks_Orders" o JOIN "PrimePicks_Users" u ON o.users::bigint = u.id ORDER BY o."createdAt" DESC LIMIT 5;`;
-  public yearlySalesQuery:string = `SELECT TO_CHAR("createdAt", 'Month') AS sales_month, SUM(price) AS monthly_sales FROM "PrimePicks_Orders" WHERE "createdAt" BETWEEN '2023-01-01' AND '2023-12-31' GROUP BY TO_CHAR("createdAt", 'Month') ORDER BY MIN("createdAt");`
+  public monthlySalesQuery:string = `SELECT TO_CHAR("createdAt", 'YYYY-MM') AS sales_month, SUM(price) AS total_sales, COUNT(id) AS total_orders, AVG(price) AS avg_order_value FROM public."PrimePicks_Orders" WHERE "paymentStatus" = true GROUP BY TO_CHAR("createdAt", 'YYYY-MM') ORDER BY sales_month;`
 }
 //#endregion
 

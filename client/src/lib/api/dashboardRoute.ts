@@ -21,7 +21,12 @@ interface DashboardData {
     name: string;
     revenue: number;
   }>;
-  yearlySalesData: Array<{ month: string; sales: number }>;
+  monthlySalesData: Array<{
+    avg_order_value: number;
+    sales_month: string;
+    total_orders: number;
+    total_sales: number;
+  }>;
 }
 
 const constant: string = "/api/auth";

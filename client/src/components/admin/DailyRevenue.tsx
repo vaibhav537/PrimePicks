@@ -18,8 +18,6 @@ interface DailyRevenueProps {
 }
 
 const DailyRevenue: React.FC<DailyRevenueProps> = ({ data }) => {
-  console.log("Daily Revenue Data:", data);
-
   return (
     <ResponsiveContainer height="100%" width="100%">
       <AreaChart data={data}>
@@ -29,7 +27,7 @@ const DailyRevenue: React.FC<DailyRevenueProps> = ({ data }) => {
         />
         <YAxis />
         <Tooltip
-          formatter={(value: any) => [`$${value}`, "Revenue"]}
+          formatter={(value: any) => [`₹${value}`, "Revenue"]}
           labelFormatter={(label: any) =>
             `Date: ${new Date(label).toLocaleDateString()}`
           }

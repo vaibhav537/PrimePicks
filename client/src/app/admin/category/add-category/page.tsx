@@ -35,8 +35,8 @@ const page = () => {
       <Card className="w-[50%] h-[35%] p-5">
         <CardHeader className="text-4xl">Add Category</CardHeader>
         <Divider />
-        <CardBody className="h-[627px]">
-          <div className="flex w-[50%] pt-5 ">
+        <CardBody>
+          <div className="flex w-[50%] py-5 ">
             <Input
               type="name"
               label="Category Name"
@@ -45,7 +45,7 @@ const page = () => {
               onChange={(e) => setCategory(e.target.value)}
             />
           </div>
-          <Button color="primary" className="w-48 h-48" onClick={handleClick}>
+          <Button color="primary" className="w-48" onClick={handleClick}>
             Add Category
           </Button>
         </CardBody>

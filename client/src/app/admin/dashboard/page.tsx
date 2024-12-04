@@ -37,9 +37,11 @@ interface TopCategories {
   total_revenue: number;
 }
 
-interface YearlySales {
-  month: string;
-  sales: number;
+interface MonthlySales {
+  avg_order_value: number;
+  sales_month: string;
+  total_orders: number;
+  total_sales: number;
 }
 
 interface DashboardData {
@@ -48,9 +50,8 @@ interface DashboardData {
   revenueData: RevenueData[];
   recentOrders: RecentOrders[];
   topCategories: TopCategories[];
-  yearlySales: YearlySales[];
+  monthlySales: MonthlySales[];
 }
-
 
 const Page: React.FC = () => {
   const helper = new Helper();
@@ -91,11 +92,23 @@ const Page: React.FC = () => {
   return (
     <div className="m-10">
       <div className="flex justify-between gap-5 ">
-        <Stats title="Total Category" data={dashboardData.stats.category_count ?? 0} />
-        <Stats title="Total Products" data={dashboardData.stats.product_count ?? 0} />
+        <Stats
+          title="Total Category"
+          data={dashboardData.stats.category_count ?? 0}
+        />
+        <Stats
+          title="Total Products"
+          data={dashboardData.stats.product_count ?? 0}
+        />
         <Stats title="Total Users" data={dashboardData.stats.user_count ?? 0} />
-        <Stats title="Total Order" data={dashboardData.stats.order_count ?? 0} />
-        <Stats title="Total Revenue" data={dashboardData.revenue.total_revenue ?? 0} />
+        <Stats
+          title="Total Order"
+          data={dashboardData.stats.order_count ?? 0}
+        />
+        <Stats
+          title="Total Revenue"
+          data={dashboardData.revenue.total_revenue ?? 0}
+        />
       </div>
       <div className="grid grid-cols-2 gap-10 mt-10">
         <div className="h-full min-h-[50vh]">
@@ -116,7 +129,7 @@ const Page: React.FC = () => {
             <CardHeader className="text-lg m-2 font-semibold">
               Monthy Sales
             </CardHeader>
-            <MonthlySales data={dashboardData.yearlySales}/>
+            <MonthlySales data={dashboardData.monthlySales} />
           </Card>
         </div>
         <div className="h-full">
@@ -124,7 +137,7 @@ const Page: React.FC = () => {
             <CardHeader className="text-lg m-2 font-semibold">
               Sale by Category
             </CardHeader>
-            {/* <CategorySales data={dashboardData.topCategories}/> */}
+            <CategorySales data={dashboardData.topCategories}/>
           </Card>
         </div>
       </div>
