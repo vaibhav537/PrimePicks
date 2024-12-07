@@ -1,3 +1,4 @@
+import { protectedUrl } from "../utils/HelperClient";
 import {
   createUrl,
   get,
@@ -6,7 +7,6 @@ import {
   post,
   axiosDelete,
 } from "./apiClients";
-const constant: string = "/api/auth";
 
 export const addCategory = async (name: string) => {
   try {
@@ -14,7 +14,7 @@ export const addCategory = async (name: string) => {
       return false;
     }
 
-    const response = await post(createUrl(constant + "/add-category"), {
+    const response = await post(createUrl(protectedUrl + "/add-category"), {
       categoryName: name,
     });
     return response.status === 200 ? true : false;
@@ -30,7 +30,7 @@ export const allCategory = async () => {
       return { status: false, data: [] };
     }
 
-    const response = await get(createUrl(constant + "/all-category"));
+    const response = await get(createUrl(protectedUrl + "/all-category"));
     return response.status === 200
       ? { status: true, data: response.data.addMsg }
       : { status: false, data: [] };
@@ -46,7 +46,9 @@ export const getCategory = async (id: string) => {
       return { status: false, data: null };
     }
 
-    const response = await get(createUrl(constant + `/categoryNameById/${id}`));
+    const response = await get(
+      createUrl(protectedUrl + `/categoryNameById/${id}`)
+    );
     if (response.status === 200) {
       return { status: true, data: response.data.addMsg };
     }
@@ -62,7 +64,7 @@ export const editCategory = async (id: string, category: string) => {
       return { status: false, data: "" };
     }
     const response = await patch(
-      createUrl(constant + `/updateCategory/${id}`),
+      createUrl(protectedUrl + `/updateCategory/${id}`),
       {
         name: category,
       }
@@ -76,15 +78,13 @@ export const editCategory = async (id: string, category: string) => {
   }
 };
 
-
-
 export const deleteCategory = async (id: string) => {
   try {
     if (!isAdminStoredJWT() || id === "") {
       return { status: false };
     }
     const response = await axiosDelete(
-      createUrl(constant + `/deleteCategory/${id}`)
+      createUrl(protectedUrl + `/deleteCategory/${id}`)
     );
     if (response.data.result === true) {
       return { status: true };

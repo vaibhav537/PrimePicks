@@ -1,18 +1,28 @@
-import * as dotenv from "dotenv";
-import express from "express";
+import express, { Application } from "express";
 import cors from "cors";
-import router from "./routes/userRoutes";
-const app = express();
+import publicRouter from "./routes/publicRoutes";
+import protectedRouter from "./routes/protectedRoutes";
 
-dotenv.config();
+const app: Application = express();
 
-app.use(cors());
+// Middleware to handle CORS
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  })
+);
+
+// JSON Parsing Middleware
 app.use(express.json());
 
-app.use("/api/auth", router);
-app.use("/", router);
+// Routes
+app.use("/api/public", publicRouter);
+app.use("/api/protected", protectedRouter);
 
-const PORT = process.env.SERVERPORT;
+// Start Server
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`THE SERVER OF PRIMEPICKS RUNNING AT : ${PORT} port!`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });

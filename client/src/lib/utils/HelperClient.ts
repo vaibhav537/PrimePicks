@@ -40,8 +40,11 @@ export const footerLinks = [
   },
 ];
 
+export const publicUrl: string = "/api/public";
+export const protectedUrl: string = "/api/protected";
+
 export async function adminLogin(password: string, email: string) {
-  const result = await post(createUrl("/api/auth/adminLogin"), {
+  const result = await post(createUrl(protectedUrl + "/adminLogin"), {
     password,
     email,
   });
@@ -53,7 +56,7 @@ export async function adminLogin(password: string, email: string) {
 }
 
 export async function userLogin(password: string, email: string) {
-  const result = await post(createUrl("/api/auth/login"), {
+  const result = await post(createUrl(publicUrl + "/login"), {
     password,
     email,
   });
@@ -75,7 +78,7 @@ export class Helper {
         color: "red",
         fontWeight: "bold",
       },
-      position: "bottom-right"
+      position: "bottom-right",
     });
   };
   public showSuccessMessage = (message: string) => {
@@ -86,7 +89,7 @@ export class Helper {
         color: "green",
         fontWeight: "bold",
       },
-      position: "bottom-right"
+      position: "bottom-right",
     });
   };
 }

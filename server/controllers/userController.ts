@@ -1,6 +1,8 @@
+import { Request, Response } from "express";
 import pool from "../connection/dbConnection";
 import { HELPER } from "../src/Resources";
 import { loginRouteHelper, signupRouteHelper } from "../src/routeHelpers";
+import { CustomRequest } from "../middleware/authMiddleware";
 const helper = new HELPER();
 
 export const invalidResponseHandler = (req: any, res: any) => {
@@ -71,14 +73,15 @@ export const login = async (
   res: any
 ) => {
   try {
+  console.log("LOGIN RUNNING");
     const { password, email } = req.body;
     let hashedPassword = helper.PasswordHasher(password);
-    const values = [email,hashedPassword];
+    const values = [email, hashedPassword];
     const result = await loginRouteHelper(values);
-    if(result.status === true && result.id !== 0) {
+    if (result.status === true && result.id !== 0) {
       const accessKey: string = await helper.GenerateKey(result.id);
       res.status(200).send({ msg: "Success", result: true, addMsg: accessKey });
-    }else{
+    } else {
       res.status(400).send({ msg: "Failure", result: false });
     }
   } catch {
@@ -87,4 +90,19 @@ export const login = async (
       .status(500)
       .send({ msg: "Failure", result: false, addMsg: helper.errorMsg });
   }
+};
+
+export const getUserDetails = async (req: CustomRequest, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "User is not authenticated." });
+  }
+  const { id, username, email, firstname, lastname, isadmin } = req.user;
+  res.status(200).json({
+    id,
+    username,
+    email,
+    firstname,
+    lastname,
+    isadmin,
+  });
 };

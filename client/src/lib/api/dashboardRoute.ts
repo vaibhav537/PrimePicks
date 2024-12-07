@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createUrl, get } from "./apiClients";
 import { AxiosResponse } from "axios";
+import { protectedUrl } from "../utils/HelperClient";
 
 interface DashboardData {
   stats: {
@@ -29,11 +30,10 @@ interface DashboardData {
   }>;
 }
 
-const constant: string = "/api/auth";
 export async function GET() {
   try {
     const response: AxiosResponse<DashboardData> = await get(
-      createUrl(constant + "/dashboard-stats")
+      createUrl(protectedUrl + "/dashboard-stats")
     );
     return NextResponse.json(response.data);
   } catch (err: unknown) {

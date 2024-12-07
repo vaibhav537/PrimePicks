@@ -1,5 +1,6 @@
-import { adminLogin, userLogin } from "../utils/HelperClient";
+import { adminLogin, publicUrl, userLogin } from "../utils/HelperClient";
 import { createUrl, post, setStoredJWT } from "./apiClients";
+
 
 export const signUp = async (
   email: string,
@@ -7,7 +8,7 @@ export const signUp = async (
   isAdmin: boolean = false
 ) => {
   try {
-    const result = await post(createUrl("/api/auth/signup"), {
+    const result = await post(createUrl(publicUrl + "/signup"), {
       username: "DEMO123456",
       password,
       firstName: "DEMO",
@@ -32,16 +33,13 @@ export const login = async (
   isLoginforAdmin: boolean = false
 ) => {
   try {
-    if(isLoginforAdmin) {
-
-      const adminResult = await adminLogin(password,email);
+    if (isLoginforAdmin) {
+      const adminResult = await adminLogin(password, email);
       return adminResult;
+    } else {
+      const userResult = await userLogin(email, password);
+      return userResult;
     }
-    else{
-   const userResult = await userLogin(email, password);
-   return userResult;
-  }
-
   } catch (error) {
     console.log(error);
   }

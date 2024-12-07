@@ -1,3 +1,4 @@
+import { protectedUrl } from "../utils/HelperClient";
 import {
   axiosDelete,
   createUrl,
@@ -7,7 +8,6 @@ import {
   post,
 } from "./apiClients";
 
-const constant: string = "/api/auth";
 
 
 export const addProduct = async (
@@ -17,7 +17,7 @@ export const addProduct = async (
     if (!isAdminStoredJWT() || data === null) {
       return { status: false, data: 0 };
     }
-    const response = await post(createUrl(constant + "/add-product"), {
+    const response = await post(createUrl(protectedUrl + "/add-product"), {
       ...data,
     });
     console.log(response);
@@ -38,7 +38,7 @@ export const allProducts = async () => {
       return { status: false, data: [] };
     }
 
-    const response = await get(createUrl(constant + "/all-products"));
+    const response = await get(createUrl(protectedUrl + "/all-products"));
     return response.status === 200
       ? { status: true, data: response.data.addMsg }
       : { status: false, data: [] };
@@ -55,7 +55,7 @@ export const deleteProduct = async (id: string) => {
     }
 
     const response = await axiosDelete(
-      createUrl(constant + `/deleteProduct/${id}`)
+      createUrl(protectedUrl + `/deleteProduct/${id}`)
     );
     if (response.data.result === true) {
       return { status: true };
@@ -73,7 +73,7 @@ export const getProductByID = async (id: string) => {
     if (!isAdminStoredJWT() || id === "") {
       return { status: false, data: null };
     }
-    const response = await get(createUrl(constant + `/productById/${id}`));
+    const response = await get(createUrl(protectedUrl + `/productById/${id}`));
     if (response.status === 200) {
       return { status: true, data: response.data.addMsg };
     }
@@ -90,7 +90,7 @@ export const editProduct = async (id: string, data: any) => {
       return { status: false, data: "" };
     }
 
-    const response = await patch(createUrl(constant + `/updateProduct/${id}`), {
+    const response = await patch(createUrl(protectedUrl + `/updateProduct/${id}`), {
       ...data,
     });
 

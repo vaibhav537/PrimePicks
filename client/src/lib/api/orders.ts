@@ -1,10 +1,11 @@
+import { Helper, protectedUrl } from "../utils/HelperClient";
 import { createUrl, get, isAdminStoredJWT, patch } from "./apiClients";
 import { AxiosError, AxiosPromise, AxiosResponse } from "axios";
-const constant: string = "/api/auth";
+const helper: Helper = new Helper();
 
 export const getAllOrders = async () => {
   try {
-    const response = await get(createUrl(constant + "/all-orders"));
+    const response = await get(createUrl(protectedUrl + "/all-orders"));
     return response.status === 200
       ? { status: true, data: response.data.addMsg }
       : { status: false, data: [] };
@@ -19,7 +20,7 @@ export const getOrder = async (id: string) => {
     if (!isAdminStoredJWT() || id === "") {
       return { status: false, data: null };
     }
-    const response = await get(createUrl(constant + `/orderById/${id}`));
+    const response = await get(createUrl(protectedUrl + `/orderById/${id}`));
     if (response.status === 200) {
       return { status: true, data: response.data.addMsg };
     }
@@ -31,14 +32,14 @@ export const getOrder = async (id: string) => {
 
 export const updateOrderPaymentStatus = async (
   paymentStatus: boolean,
-  orderID: string,
+  orderID: string
 ): Promise<AxiosResponse | AxiosError> => {
   try {
     if (!isAdminStoredJWT()) {
       throw new Error("Unauthorized");
     }
     const response = await patch(
-      createUrl(constant + `/orderById/${orderID}`),
+      createUrl(protectedUrl + `/orderById/${orderID}`),
       { paymentStatus }
     );
     return response; // Return AxiosResponse directly

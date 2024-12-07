@@ -8,6 +8,7 @@ import { GET } from "@/lib/api/dashboardRoute";
 import DailyRevenue from "@/components/admin/DailyRevenue";
 import MonthlySales from "@/components/admin/MonthlySales";
 import CategorySales from "@/components/admin/CategorySales";
+import RecentOrders from "@/components/admin/RecentOrders";
 
 interface Stats {
   category_count: number;
@@ -137,9 +138,16 @@ const Page: React.FC = () => {
             <CardHeader className="text-lg m-2 font-semibold">
               Sale by Category
             </CardHeader>
-            <CategorySales data={dashboardData.topCategories}/>
+            <CategorySales data={dashboardData.topCategories} />
           </Card>
         </div>
+        <RecentOrders
+          data={dashboardData.recentOrders.map((order) => ({
+            id: order.order_id, 
+            price: order.order_price, 
+            user: { username: order.user_name },
+          }))}
+        />
       </div>
     </div>
   );
