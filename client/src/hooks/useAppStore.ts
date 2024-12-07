@@ -50,4 +50,6 @@ export const useUserDetails = () => {
 
     fetchUserDetails();
   }, []);
+
+  return { user, loading, error };
 };

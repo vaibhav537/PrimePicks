@@ -73,8 +73,7 @@ export const login = async (
   res: any
 ) => {
   try {
-  console.log("LOGIN RUNNING");
-    const { password, email } = req.body;
+    const { password,email } = req.body;
     let hashedPassword = helper.PasswordHasher(password);
     const values = [email, hashedPassword];
     const result = await loginRouteHelper(values);

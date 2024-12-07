@@ -37,7 +37,7 @@ export const login = async (
       const adminResult = await adminLogin(password, email);
       return adminResult;
     } else {
-      const userResult = await userLogin(email, password);
+      const userResult = await userLogin(password, email);
       return userResult;
     }
   } catch (error) {
