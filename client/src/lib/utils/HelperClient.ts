@@ -44,7 +44,7 @@ export const publicUrl: string = "/api/public";
 export const protectedUrl: string = "/api/protected";
 
 export async function adminLogin(password: string, email: string) {
-  const result = await post(createUrl(protectedUrl + "/adminLogin"), {
+  const result = await post(createUrl(publicUrl + "/adminLogin"), {
     password,
     email,
   });
@@ -92,4 +92,27 @@ export class Helper {
       position: "bottom-right",
     });
   };
+
+  public getRandomDateInNext7Days(): string {
+    const currentDate: Date = new Date();
+    const next7Days: Date = new Date(currentDate);
+    next7Days.setDate(currentDate.getDate() + 7);
+
+    const randomDate: Date = new Date(
+      currentDate.getTime() +
+        Math.random() * (next7Days.getTime() - currentDate.getTime())
+    );
+
+    const options: Intl.DateTimeFormatOptions = {
+      day: "numeric",
+      month: "long",
+    };
+
+    const formattedDate: string = randomDate.toLocaleDateString(
+      "en-US",
+      options
+    );
+
+    return formattedDate;
+  }
 }

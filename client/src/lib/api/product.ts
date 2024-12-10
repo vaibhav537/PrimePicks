@@ -34,16 +34,11 @@ export const addProduct = async (
 
 export const allProducts = async () => {
   try {
-    if (!isAdminStoredJWT()) {
-      return { status: false, data: [] };
-    }
-
     const response = await get(createUrl(protectedUrl + "/all-products"));
     return response.status === 200
       ? { status: true, data: response.data.addMsg }
       : { status: false, data: [] };
   } catch (error) {
-    alert("Error Occured !! ");
     console.log(error);
   }
 };

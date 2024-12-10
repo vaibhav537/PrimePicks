@@ -9,50 +9,9 @@ import DailyRevenue from "@/components/admin/DailyRevenue";
 import MonthlySales from "@/components/admin/MonthlySales";
 import CategorySales from "@/components/admin/CategorySales";
 import RecentOrders from "@/components/admin/RecentOrders";
+import { DashboardData } from "@/lib/utils/types";
 
-interface Stats {
-  category_count: number;
-  product_count: number;
-  user_count: number;
-  order_count: number;
-}
 
-interface Revenue {
-  total_revenue: number;
-}
-
-interface RevenueData {
-  order_date: string;
-  daily_revenue: number;
-}
-
-interface RecentOrders {
-  order_id: number;
-  order_price: number;
-  user_name: string;
-}
-
-interface TopCategories {
-  category_id: number;
-  category_name: string;
-  total_revenue: number;
-}
-
-interface MonthlySales {
-  avg_order_value: number;
-  sales_month: string;
-  total_orders: number;
-  total_sales: number;
-}
-
-interface DashboardData {
-  stats: Stats;
-  revenue: Revenue;
-  revenueData: RevenueData[];
-  recentOrders: RecentOrders[];
-  topCategories: TopCategories[];
-  monthlySales: MonthlySales[];
-}
 
 const Page: React.FC = () => {
   const helper = new Helper();

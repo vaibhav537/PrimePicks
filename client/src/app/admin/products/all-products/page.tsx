@@ -27,6 +27,7 @@ import { Helper } from "@/lib/utils/HelperClient";
 import { allProducts, deleteProduct } from "@/lib/api/product";
 import { verifyToken } from "@/lib/utils/verifyToken";
 import { encrypter } from "@/lib/utils/crypto";
+import { UserType } from "@/lib/utils/types";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -36,7 +37,7 @@ const columns = [
   { name: "ACTIONS", uid: "actions" },
 ];
 
-type User = any;
+
 
 type Product = {
   category: {
@@ -155,9 +156,9 @@ const Page = () => {
   }, [page, filteredItems, rowsPerPage]);
 
   const sortedItems = React.useMemo(() => {
-    return [...items].sort((a: User, b: User) => {
-      const first = a[sortDescriptor.column as keyof User] as number;
-      const second = b[sortDescriptor.column as keyof User] as number;
+    return [...items].sort((a: UserType, b: UserType) => {
+      const first = a[sortDescriptor.column as keyof UserType] as number;
+      const second = b[sortDescriptor.column as keyof UserType] as number;
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
@@ -165,7 +166,7 @@ const Page = () => {
   }, [sortDescriptor, items]);
 
   const renderCell = React.useCallback(
-    (product: User, columnKey: React.Key) => {
+    (product: UserType, columnKey: React.Key) => {
       const cellValue = product[columnKey as keyof Product];
       switch (columnKey) {
         case "count": {

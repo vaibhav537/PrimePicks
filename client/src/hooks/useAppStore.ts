@@ -1,3 +1,6 @@
+"use client";
+import { createUrl, get } from "@/lib/api/apiClients";
+import { protectedUrl } from "@/lib/utils/HelperClient";
 import { useState, useEffect } from "react";
 
 interface UserStructure {
@@ -19,6 +22,7 @@ export const useUserDetails = () => {
     const fetchUserDetails = async () => {
       try {
         const token = localStorage.getItem("accessToken");
+        console.log(`Access token: ${token}`);
         if (!token) {
           throw new Error(`No token available`);
         }
@@ -28,21 +32,19 @@ export const useUserDetails = () => {
           throw new Error("User ID not Found");
         }
 
-        const response = await fetch(`/api/users/${userID}`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Include token for auth if needed
-          },
-        });
+        const response = await get<UserStructure>(
+          createUrl(`${protectedUrl}/userDetails`)
+        );
 
-        if (!response.ok) {
+        if (!response) {
           throw new Error("Failed to fetch user details");
         }
 
-        const data: UserStructure = await response.json();
+        const data: UserStructure = response.data;
 
         setUser(data);
       } catch (err: any) {
-        setError(err.message);
+        setError(err.response?.data?.message || err.message);
       } finally {
         setLoading(false);
       }

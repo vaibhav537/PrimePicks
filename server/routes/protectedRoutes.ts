@@ -24,7 +24,6 @@ const protectedRouter = express.Router();
 protectedRouter.use(authenticateToken);
 
 protectedRouter.get("/userDetails", getUserDetails);
-protectedRouter.post("/adminLogin", adminLogin);
 protectedRouter.post("/add-category", addCategory);
 protectedRouter.get("/all-category", allCategory);
 protectedRouter.get("/categoryNameById/:id", categoryNameById);

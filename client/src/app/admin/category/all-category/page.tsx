@@ -27,11 +27,7 @@ import { Helper } from "@/lib/utils/HelperClient";
 import { allCategory, deleteCategory } from "@/lib/api/category";
 import { verifyToken } from "@/lib/utils/verifyToken";
 import { encrypter } from "@/lib/utils/crypto";
-
-type Category = {
-  id: number;
-  name: string;
-};
+import { Category, UserType } from "@/lib/utils/types";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -39,8 +35,6 @@ const columns = [
   { name: "PRODUCTS", uid: "products", sortable: true },
   { name: "ACTIONS", uid: "actions" },
 ];
-
-type User = any;
 
 const page = () => {
   const router = useRouter();
@@ -54,12 +48,12 @@ const page = () => {
     column: "age",
     direction: "ascending",
   });
-  const helper = new Helper();
-  const token = localStorage.getItem(helper.tokenName);
+  //  const [token, setToken] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(1);
   const [deleteID, setDeleteID] = React.useState(null);
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-
+  const helper = new Helper();
+  const token = localStorage.getItem(helper.tokenName);
   useEffect(() => {
     const fetchData = async () => {
       if (!token || !(await verifyToken(token))) router.push("/admin");
@@ -139,9 +133,9 @@ const page = () => {
   }, [page, filteredItems, rowsPerPage]);
 
   const sortedItems = React.useMemo(() => {
-    return [...items].sort((a: User, b: User) => {
-      const first = a[sortDescriptor.column as keyof User] as number;
-      const second = b[sortDescriptor.column as keyof User] as number;
+    return [...items].sort((a: UserType, b: UserType) => {
+      const first = a[sortDescriptor.column as keyof UserType] as number;
+      const second = b[sortDescriptor.column as keyof UserType] as number;
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
@@ -149,8 +143,8 @@ const page = () => {
   }, [sortDescriptor, items]);
 
   const renderCell = React.useCallback(
-    (category: User, columnKey: React.Key) => {
-      const cellValue = category[columnKey as keyof User];
+    (category: UserType, columnKey: React.Key) => {
+      const cellValue = category[columnKey as keyof UserType];
       switch (columnKey) {
         case "products": {
           return <div>{category.product_count} </div>;

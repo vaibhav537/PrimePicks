@@ -9,7 +9,8 @@ axios.interceptors.request.use(
     if (config.url) {
       const { origin } = new URL(config.url);
       const allowedOrigins = [apiURL];
-      const accessToken = localStorage.getItem(jwtKey);
+      const accessToken =
+        localStorage.getItem(jwtKey) || localStorage.getItem(adminKey);
       if (allowedOrigins.includes(origin)) {
         config.headers.authorization = "Bearer " + accessToken;
       }

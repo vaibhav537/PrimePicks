@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import pool from "../connection/dbConnection";
 import { HELPER } from "../src/Resources";
 import { loginRouteHelper, signupRouteHelper } from "../src/routeHelpers";
-import { CustomRequest } from "../middleware/authMiddleware";
+import { AuthenticateRequest } from "../middleware/authMiddleware";
 const helper = new HELPER();
 
 export const invalidResponseHandler = (req: any, res: any) => {
@@ -73,7 +73,7 @@ export const login = async (
   res: any
 ) => {
   try {
-    const { password,email } = req.body;
+    const { password, email } = req.body;
     let hashedPassword = helper.PasswordHasher(password);
     const values = [email, hashedPassword];
     const result = await loginRouteHelper(values);
@@ -91,17 +91,23 @@ export const login = async (
   }
 };
 
-export const getUserDetails = async (req: CustomRequest, res: Response) => {
-  if (!req.user) {
-    return res.status(401).json({ message: "User is not authenticated." });
+export const getUserDetails = async (
+  req: AuthenticateRequest,
+  res: Response
+) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(400).json({ message: "User ID not found" });
+    }
+    const { rows } = await pool.query(helper.authQuery, [userId]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
-  const { id, username, email, firstname, lastname, isadmin } = req.user;
-  res.status(200).json({
-    id,
-    username,
-    email,
-    firstname,
-    lastname,
-    isadmin,
-  });
 };

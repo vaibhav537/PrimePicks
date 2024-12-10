@@ -1,4 +1,6 @@
 "use client";
+import { useAppStore } from "@/app/store/store";
+import { useUserDetails } from "@/hooks/useAppStore";
 import { allCategory } from "@/lib/api/category";
 import { encrypter } from "@/lib/utils/crypto";
 import {
@@ -23,15 +25,20 @@ type Category = {
 
 const Navbar = () => {
   const router = useRouter();
+  const { user, loading, error } = useUserDetails();
+  const { cartProducts } = useAppStore();
+  console.log({ cartProducts });
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesPopover, setCategoriesPopover] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [detailsPopover, setDetailsPopover] = useState(false);
   useEffect(() => {
     const getData = async () => {
       const response = await allCategory();
+      console.log({ response });
       const categoryData = response?.data;
       const computedCategory: Category[] = [];
-      console.log(categoryData);
+      console.log({ categoryData });
       categoryData.forEach((category: Category) => {
         if (category.product_count > 0) {
           computedCategory.push(category);
@@ -39,7 +46,11 @@ const Navbar = () => {
       });
       setCategories(computedCategory);
     };
-    getData();
+    if (localStorage.getItem("accessToken")) {
+      getData();
+    } else {
+      return;
+    }
   }, []);
 
   const handleSearch = () => {
@@ -109,21 +120,63 @@ const Navbar = () => {
           <FiSearch />
         </button>
       </div>
-      <div className="flex items-end gap-1 cursor-pointer ">
-        <div className="flex flex-col gap-0 justify-around">
-          <span className="text-sm h-4">Hello Vaibhav</span>
-          <span className="font-semibold">Account & Orders</span>
+      {user === null ? (
+        <div className="flex flex-col gap-0 justify-around cursor-pointer">
+          <span className="font-semibold" onClick={() => router.push("/login")}>
+            Login
+          </span>
         </div>
-        <div className="text-xl">
-          <BiChevronDown />
-        </div>
-      </div>
-      <div className="cursor-pointer ">
+      ) : (
+        <Popover
+          placement="bottom"
+          showArrow
+          isOpen={detailsPopover}
+          onOpenChange={(open) => setDetailsPopover(open)}
+          backdrop="blur"
+        >
+          <PopoverTrigger>
+            <div className="flex items-end gap-1 cursor-pointer ">
+              <div className="flex flex-col gap-0 justify-around">
+                <span className="text-sm h-4">Hello Vaibhav</span>
+                <span className="font-semibold">Account & Orders</span>
+              </div>
+              <div className="text-xl">
+                <BiChevronDown />
+              </div>
+            </div>
+          </PopoverTrigger>
+          <PopoverContent>
+            <div className="px-1 py-2 ">
+              <div className="w-full max-w-[260px]">
+                <Listbox
+                  aria-label="Actions"
+                  onAction={(key) => {
+                    router.push(key as string);
+                    setDetailsPopover(false);
+                  }}
+                  className="flex flex-col gap-1"
+                >
+                  <ListboxItem key={"/my-orders"}>My Orders</ListboxItem>
+                  <ListboxItem
+                    key={"/logout"}
+                    className="text-danger"
+                    color="danger"
+                  >
+                    Log out
+                  </ListboxItem>
+                </Listbox>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      )}
+
+      <div className="cursor-pointer" onClick={() => router.push("/cart")}>
         <div className="flex items-end relative ">
           <Image src="/cart.png" alt="cart" height={40} width={40} />
           <span className="font-medium">Cart</span>
           <span className="absolute bottom-5 left-[15px] w-4 text-xs flex items-center justify-center text-pp-secondary font-medium">
-            5
+            {cartProducts.length}
           </span>
         </div>
       </div>

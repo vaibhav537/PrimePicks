@@ -1,5 +1,12 @@
 import pool from "../connection/dbConnection";
-import { addCategoryRouteHelper, DeleteCategoryByID, GetAllCategory, GetCategoryId, GetSpecificCategory, UpdateCategory } from "../src/categoryRouteHelper";
+import {
+  addCategoryRouteHelper,
+  DeleteCategoryByID,
+  GetAllCategory,
+  GetCategoryId,
+  GetSpecificCategory,
+  UpdateCategory,
+} from "../src/categoryRouteHelper";
 import { HELPER } from "../src/Resources";
 
 const helper = new HELPER();
@@ -78,6 +85,7 @@ export const updateCategoryNameById = async (
     const { name } = req.body;
     const updatedAtTime = helper.getTime("Asia/Kolkata");
     const resultantData = await UpdateCategory(id, name, updatedAtTime);
+    console.log({ resultantData });
     if (resultantData.status === true) {
       res
         .status(200)

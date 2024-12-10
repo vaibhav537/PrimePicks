@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+*{
+   user-select: none; 
+}
+
 .link-hover{
     cursor: pointer;
     width: max-content;
@@ -10,3 +14,4 @@
 .link-hover:hover{
     color: #ff9900;
 }
+

@@ -7,42 +7,8 @@ import { Helper } from "@/lib/utils/HelperClient";
 import { verifyToken } from "@/lib/utils/verifyToken";
 import { redirect, useRouter } from "next/navigation";
 import { decrypter } from "@/lib/utils/crypto";
+import { Order } from "@/lib/utils/types";
 
-export interface ProductType {
-  categoryId: string;
-  colors: string[];
-  createdAt: string;
-  description: string[];
-  discountedPrice: number;
-  id: string;
-  images: string[];
-  salePrice: number;
-  title: string;
-  updatedAt: string;
-  variants: string[];
-}
-
-interface Status {
-  status: string;
-}
-
-interface User {
-  id: string;
-  email: string;
-  usernames: string;
-}
-
-interface Order {
-  createdAt: string;
-  orderId: string;
-  paymentintent: string;
-  paymentStatus: boolean;
-  price: number;
-  status: Status;
-  updatedAt: string;
-  user: User;
-  products: ProductType[];
-}
 
 const Page = ({ params: { orderId } }: { params: { orderId: string } }) => {
   const [order, setOrder] = useState<Order | undefined>(undefined);

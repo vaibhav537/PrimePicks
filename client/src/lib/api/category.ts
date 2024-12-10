@@ -1,3 +1,4 @@
+import { decrypter } from "../utils/crypto";
 import { protectedUrl } from "../utils/HelperClient";
 import {
   createUrl,
@@ -26,16 +27,16 @@ export const addCategory = async (name: string) => {
 
 export const allCategory = async () => {
   try {
-    if (!isAdminStoredJWT()) {
-      return { status: false, data: [] };
-    }
+    // if (!isAdminStoredJWT()) {
+    //   return { status: false, data: [] };
+    // }
 
     const response = await get(createUrl(protectedUrl + "/all-category"));
     return response.status === 200
       ? { status: true, data: response.data.addMsg }
       : { status: false, data: [] };
   } catch (error) {
-    alert("Error Occured !! ");
+    //alert("Error Occured !! ");
     console.log(error);
   }
 };
@@ -60,15 +61,19 @@ export const getCategory = async (id: string) => {
 
 export const editCategory = async (id: string, category: string) => {
   try {
-    if (!isAdminStoredJWT() || id === "" || category) {
+    console.log({category})
+    if (!isAdminStoredJWT() || id === "" || !category) {
+      console.log("Here")
       return { status: false, data: "" };
     }
+    const decodedID = decrypter(id)
     const response = await patch(
-      createUrl(protectedUrl + `/updateCategory/${id}`),
+      createUrl(protectedUrl + `/updateCategory/${decodedID}`),
       {
         name: category,
       }
     );
+    console.log({ response });
     if (response.data.result === true) {
       return { status: true, data: response.data.addMsg };
     }

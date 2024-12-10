@@ -17,22 +17,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { verifyToken } from "@/lib/utils/verifyToken";
 import { decrypter } from "@/lib/utils/crypto";
-
-interface ProductData {
-  categoryID: string;
-  colors: string[];
-  description: string[];
-  discountedPrice: number;
-  images: string[];
-  titlePrice: number;
-  title: string;
-  variants: string[];
-}
-
-interface Categrory {
-  label: string;
-  value: string;
-}
+import { CategoryInterface, ProductInterface } from "@/lib/utils/types";
 
 const Page = ({ params: { productId } }: { params: { productId: string } }) => {
   const router = useRouter();
@@ -47,7 +32,7 @@ const Page = ({ params: { productId } }: { params: { productId: string } }) => {
   const [colors, setColors] = useState<string[]>([]);
   const [color, setColor] = useState<string>("");
   const [category, setCategory] = useState<Set<string>>(new Set());
-  const [categories, setCategories] = useState<Categrory[]>([]);
+  const [categories, setCategories] = useState<CategoryInterface[]>([]);
   const [defaultCategory, setDefaultCategory] = useState("");
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const helper = new Helper();
@@ -79,7 +64,7 @@ const Page = ({ params: { productId } }: { params: { productId: string } }) => {
       const results = await allCategory();
       if (results) {
         const resultsArray = results.data;
-        const ComputedData: Categrory[] = resultsArray.map(
+        const ComputedData: CategoryInterface[] = resultsArray.map(
           ({ name, id }: { name: string; id: string }) => ({
             label: name,
             value: id,
@@ -118,7 +103,7 @@ const Page = ({ params: { productId } }: { params: { productId: string } }) => {
   const handleUpdateProduct = async () => {
     try {
       console.log(Array.from(category).join(""));
-      const data: ProductData = {
+      const data: ProductInterface = {
         categoryID: Array.from(category).join(""),
         colors,
         description: descriptions,

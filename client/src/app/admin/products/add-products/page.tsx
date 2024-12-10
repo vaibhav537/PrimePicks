@@ -2,6 +2,7 @@
 import { allCategory } from "@/lib/api/category";
 import { addProduct } from "@/lib/api/product";
 import { Helper } from "@/lib/utils/HelperClient";
+import { CategoryInterface, ProductData } from "@/lib/utils/types";
 import { verifyToken } from "@/lib/utils/verifyToken";
 import {
   Button,
@@ -17,23 +18,7 @@ import { CldUploadButton } from "next-cloudinary";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-interface ProductData {
-  category: {
-    id: string;
-  };
-  colors: string[];
-  description: string[];
-  discountedPrice: number;
-  images: string[];
-  titlePrice: number;
-  title: string;
-  variants: string[];
-}
 
-interface Categrory {
-  label: string;
-  value: string;
-}
 
 const Page = () => {
   const router = useRouter();
@@ -48,7 +33,7 @@ const Page = () => {
   const [colors, setColors] = useState<string[]>([]);
   const [color, setColor] = useState<string>("");
   const [category, setCategory] = useState<Set<string>>(new Set());
-  const [categories, setCategories] = useState<Categrory[]>([]);
+  const [categories, setCategories] = useState<CategoryInterface[]>([]);
   const helper =  new Helper();
   const token = localStorage.getItem(helper.tokenName);
   useEffect(() => {
@@ -57,7 +42,7 @@ const Page = () => {
       const results = await allCategory();
       if (results) {
         const resultsArray = results.data;
-        const ComputedData: Categrory[] = resultsArray.map(
+        const ComputedData: CategoryInterface[] = resultsArray.map(
           ({ name, id }: { name: string; id: string }) => ({
             label: name,
             value: id,

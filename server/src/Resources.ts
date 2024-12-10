@@ -9,8 +9,8 @@ class internalQueries {
   public userInputQuery: string = `INSERT INTO "PrimePicks_Users" (id , username, email, password, phonenumber, firstname, isadmin, lastname, createdat,updatedat) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`;
   public checkIdinDBQuery: string = `SELECT SUM(count) FROM (SELECT COUNT(*) AS count FROM "PrimePicks_Users" WHERE id = $1 UNION ALL SELECT COUNT(*) AS count FROM "PrimePicks_Category" WHERE id = $1 UNION ALL SELECT COUNT(*) AS count FROM "PrimePicks_Products" WHERE id = $1 UNION ALL SELECT COUNT(*) AS count FROM "PrimePicks_Orders" WHERE id = $1) AS combined_count;`;
   public userLoginQuery: string = `SELECT id FROM "PrimePicks_Users" WHERE email = $1 AND password = $2`;
-  public afterSignupQuery: string = `\ email,firstname,lastname,isadmin FROM "PrimePicks_Users" WHERE id= $1`;
-  public authQuery: string = `SELECT id, username, email, firstname, lastname, isadmin FROM "PrimePicks_Users" WHERE id = $1`;
+  public afterSignupQuery: string = `SELECT id, username,email,firstname,lastname,isadmin FROM "PrimePicks_Users" WHERE id= $1`;
+  public authQuery: string = `SELECT id, username, email, phonenumber, firstname, lastname, isadmin FROM "PrimePicks_Users" WHERE id = $1`;
   public adminLoginQuery: string = `SELECT id FROM "PrimePicks_Users" WHERE email = $1 AND password = $2 AND isadmin = true`;
   public addCategoryQuery: string = `INSERT INTO "PrimePicks_Category"(id, name, products, createdat,updatedat) VALUES ($1,$2,$3,$4,$5)`;
   public getCategoryIdQuery: string = `SELECT id FROM "PrimePicks_Category" WHERE name = $1`;
