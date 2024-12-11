@@ -48,6 +48,7 @@ export async function DeleteProductByID(id: string) {
     const res = await client.query(helper.deleteProductByIDQuery, [id]);
     client.release();
     if (res) {
+      
       return { status: true };
     }
   } catch (error) {

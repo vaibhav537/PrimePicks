@@ -23,7 +23,9 @@ class internalQueries {
   public getProductIdQuery: string = `SELECT id FROM "PrimePicks_Products" WHERE title = $1`;
   public updateCategoryQuery: string = `UPDATE public."PrimePicks_Category" SET products = array_append (products::bigint[], $1) WHERE id = $2;`;
   public getAllProductsQuery: string = `SELECT * FROM "PrimePicks_Products"`;
-  public deleteProductByIDQuery: string = `DELETE FROM "PrimePicks_Products" WHERE id =$1`;
+  //public deleteProductByIDQuery: string = `DELETE FROM "PrimePicks_Products" WHERE id =$1`;
+  public deleteProductByIDQuery: string = `  WITH deleted_product AS (DELETE FROM "PrimePicks_Products" WHERE id = $1 RETURNING id) UPDATE "PrimePicks_Category" SET products = array_remove(products, (SELECT id FROM deleted_product)) WHERE $1 = ANY(products);`;
+
   public getProductByIdQuery: string = `SELECT * FROM "PrimePicks_Products" WHERE id = $1`;
   public updateProductDetailsQuery: string = `UPDATE "PrimePicks_Products" SET updatedat = $1, title = $2, "discountedPrice" = $3, "titlePrice" = $4, description = $5, colors = $6, variants = $7, category_id = $8 WHERE id = $9 RETURNING id`;
   public getAllOrdersQuery: string = `SELECT o.*, u.username AS user FROM public."PrimePicks_Orders" o JOIN public."PrimePicks_Users" u ON o.users::oid = u.id;`;
@@ -34,7 +36,7 @@ class internalQueries {
   public revenueQuery: string = `SELECT COALESCE(SUM(price), 0) AS total_revenue FROM "PrimePicks_Orders" WHERE "paymentStatus" = true;`;
   public revenueDataQuery: string = `SELECT DATE("createdAt") AS order_date, SUM(price) AS daily_revenue FROM "PrimePicks_Orders" WHERE "paymentStatus" = true GROUP BY DATE("createdAt") ORDER BY DATE("createdAt") DESC LIMIT 30;`;
   public recentOrdersQuery: string = `SELECT o.id AS order_id, o.price AS order_price, u.username AS user_name FROM "PrimePicks_Orders" o JOIN "PrimePicks_Users" u ON o.users::bigint = u.id ORDER BY o."createdAt" DESC LIMIT 5;`;
-  public monthlySalesQuery:string = `SELECT TO_CHAR("createdAt", 'YYYY-MM') AS sales_month, SUM(price) AS total_sales, COUNT(id) AS total_orders, AVG(price) AS avg_order_value FROM public."PrimePicks_Orders" WHERE "paymentStatus" = true GROUP BY TO_CHAR("createdAt", 'YYYY-MM') ORDER BY sales_month;`
+  public monthlySalesQuery: string = `SELECT TO_CHAR("createdAt", 'YYYY-MM') AS sales_month, SUM(price) AS total_sales, COUNT(id) AS total_orders, AVG(price) AS avg_order_value FROM public."PrimePicks_Orders" WHERE "paymentStatus" = true GROUP BY TO_CHAR("createdAt", 'YYYY-MM') ORDER BY sales_month;`;
 }
 //#endregion
 
