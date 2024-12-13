@@ -27,7 +27,6 @@ const Navbar = () => {
   const router = useRouter();
   const { user, loading, error } = useUserDetails();
   const { cartProducts } = useAppStore();
-  console.log({ cartProducts });
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesPopover, setCategoriesPopover] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -35,10 +34,8 @@ const Navbar = () => {
   useEffect(() => {
     const getData = async () => {
       const response = await allCategory();
-      console.log({ response });
       const categoryData = response?.data;
       const computedCategory: Category[] = [];
-      console.log({ categoryData });
       categoryData.forEach((category: Category) => {
         if (category.product_count > 0) {
           computedCategory.push(category);
@@ -54,7 +51,8 @@ const Navbar = () => {
   }, []);
 
   const handleSearch = () => {
-    router.push(`/search?query=${searchTerm}`);
+    const encodedSearchTerm = encrypter(searchTerm)
+    router.push(`/search?query=${encodedSearchTerm}`);
   };
   return (
     <nav className="bg-pp-dark min-h-[12vh] flex items-center px-10 h-full text-white gap-10">

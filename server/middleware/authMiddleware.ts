@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-import pool from "../connection/dbConnection";
 import { HELPER } from "../src/Resources";
 
 dotenv.config();
@@ -18,29 +17,60 @@ export interface AuthenticateRequest extends Request {
   };
 }
 
-export const authenticateToken = async (
+// export const authenticateToken = async (
+//   req: AuthenticateRequest,
+//   res: Response,
+//   next: NextFunction
+// )  => {
+//   const authHeader = req.headers.authorization;
+//   const token = authHeader && authHeader.split(" ")[1];
+//   const helper = new HELPER();
+
+//   if (!token) {
+//     return res.status(401).json({ message: "Access denied" });
+//   }
+
+//   try {
+//     jwt.verify(token, key, (err, user: any) => {
+//       if (err) {
+//         return res.status(403).json({ message: "Forbidden: Invalid Token" });
+//       }
+//       req.user = { id: user.id };
+//       next();
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(403).json({ message: "Token is invalid or expired." });
+//   }
+// };
+
+export const authenticateToken = (
   req: AuthenticateRequest,
   res: Response,
   next: NextFunction
-) => {
+): void => {
   const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1];
+  const token = authHeader && authHeader.split(" ")[1];  // Extract token from Authorization header
   const helper = new HELPER();
 
   if (!token) {
-    return res.status(401).json({ message: "Access denied" });
+    // Send a response if the token is missing, but do NOT return the response
+    res.status(401).json({ message: "Access denied" });
+    return;  // Terminate the middleware execution
   }
 
-  try {
-    jwt.verify(token, key, (err, user: any) => {
-      if (err) {
-        return res.status(403).json({ message: "Forbidden: Invalid Token" });
-      }
-      req.user = { id: user.id };
-      next();
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(403).json({ message: "Token is invalid or expired." });
-  }
+  // Using jwt.verify to validate the token with a callback
+  jwt.verify(token, key, (err, user: any) => {
+    if (err) {
+      // Send a response if the token is invalid, but do NOT return the response
+      res.status(403).json({ message: "Forbidden: Invalid Token" });
+      return;  // Terminate the middleware execution
+    }
+
+    // Attach the user to the req object if the token is valid
+    req.user = { id: user.id };
+
+    // Proceed to the next middleware or route handler
+    next();
+  });
 };

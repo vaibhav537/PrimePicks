@@ -16,16 +16,17 @@ class internalQueries {
   public getCategoryIdQuery: string = `SELECT id FROM "PrimePicks_Category" WHERE name = $1`;
   public getAllCategoryQuery: string = `SELECT id, name, cardinality(products) AS product_count FROM "PrimePicks_Category"`;
   public getCategoryNameByIdQuery: string = `SELECT name FROM "PrimePicks_Category" WHERE id = $1`;
-  public updateCategoryNameByIdQuery: string = `UPDATE "PrimePicks_Category" SET name = $2, updatedat = $3 WHERE id = $1 RETURNING name`;
+  public updateCategoryNameByIdQuery: string = `UPDATE "PrimePicks_Category" SET name = $2, updatedat = $3 WHERE id = $1 RETURNING name;`;
   public deleteCategoryByIDQuery: string = `DELETE FROM "PrimePicks_Category" WHERE id =$1`;
   public topCategoriesQuery: string = `SELECT c.id AS category_id, c.name AS category_name, SUM(p."discountedPrice") AS total_revenue FROM "PrimePicks_Category" c JOIN UNNEST(c.products) product_id ON true JOIN "PrimePicks_Products" p ON p.id = product_id GROUP BY c.id, c.name ORDER BY total_revenue DESC LIMIT 5;`;
+  public getProductsByCategoryQuery: string = `SELECT p.* FROM "PrimePicks_Products" p JOIN "PrimePicks_Category" c ON c.id = p.category_id WHERE c.id = $1;`;
   public addProductQuery: string = `INSERT INTO public."PrimePicks_Products" (id,title,description,"titlePrice","discountedPrice",colors,variants,images,createdat,updatedat,reviews,category_id, orders) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`;
   public getProductIdQuery: string = `SELECT id FROM "PrimePicks_Products" WHERE title = $1`;
   public updateCategoryQuery: string = `UPDATE public."PrimePicks_Category" SET products = array_append (products::bigint[], $1) WHERE id = $2;`;
   public getAllProductsQuery: string = `SELECT * FROM "PrimePicks_Products"`;
+  public getProductsByTitleQuery: string = `SELECT * FROM "PrimePicks_Products" WHERE title ILIKE $1;`;
   //public deleteProductByIDQuery: string = `DELETE FROM "PrimePicks_Products" WHERE id =$1`;
-  public deleteProductByIDQuery: string = `  WITH deleted_product AS (DELETE FROM "PrimePicks_Products" WHERE id = $1 RETURNING id) UPDATE "PrimePicks_Category" SET products = array_remove(products, (SELECT id FROM deleted_product)) WHERE $1 = ANY(products);`;
-
+  public deleteProductByIDQuery: string = `WITH deleted_product AS (DELETE FROM "PrimePicks_Products" WHERE id = $1 RETURNING id) UPDATE "PrimePicks_Category" SET products = array_remove(products, (SELECT id FROM deleted_product)) WHERE $1 = ANY(products);`;
   public getProductByIdQuery: string = `SELECT * FROM "PrimePicks_Products" WHERE id = $1`;
   public updateProductDetailsQuery: string = `UPDATE "PrimePicks_Products" SET updatedat = $1, title = $2, "discountedPrice" = $3, "titlePrice" = $4, description = $5, colors = $6, variants = $7, category_id = $8 WHERE id = $9 RETURNING id`;
   public getAllOrdersQuery: string = `SELECT o.*, u.username AS user FROM public."PrimePicks_Orders" o JOIN public."PrimePicks_Users" u ON o.users::oid = u.id;`;

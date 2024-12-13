@@ -48,7 +48,6 @@ export async function DeleteProductByID(id: string) {
     const res = await client.query(helper.deleteProductByIDQuery, [id]);
     client.release();
     if (res) {
-      
       return { status: true };
     }
   } catch (error) {
@@ -80,3 +79,15 @@ export async function UpdateProduct(values: Array<string | Array<string>>) {
     return { status: false, data: null };
   }
 }
+
+export const getProductsByTitle = async (searchTerm: string) => {
+  const values = [`%${searchTerm}%`];
+  const result = await pool.query(helper.getProductsByTitleQuery, values);
+  return result.rows;
+};
+
+export const getProductsByCategory = async (categoryId: string) => {
+  const values = [categoryId];
+  const result = await pool.query(helper.getProductsByCategoryQuery, values);
+  return result.rows;
+};

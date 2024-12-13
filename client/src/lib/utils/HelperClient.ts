@@ -7,6 +7,14 @@ import {
   setStoredJWT,
 } from "../api/apiClients";
 import { Toaster, toast } from "react-hot-toast";
+
+export const sortingTypes = [
+  { id: 1, name: "Price: Low to High" },
+  { id: 2, name: "Price: High to Low" },
+  { id: 3, name: "Avg. Customer Review" },
+  { id: 4, name: "Newest Arrival" },
+];
+
 export const footerLinks = [
   {
     title: "Make Money",
@@ -42,6 +50,7 @@ export const footerLinks = [
 
 export const publicUrl: string = "/api/public";
 export const protectedUrl: string = "/api/protected";
+export const clientTokenName: string = "accessToken";
 
 export async function adminLogin(password: string, email: string) {
   const result = await post(createUrl(publicUrl + "/adminLogin"), {

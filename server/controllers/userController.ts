@@ -94,16 +94,18 @@ export const login = async (
 export const getUserDetails = async (
   req: AuthenticateRequest,
   res: Response
-) => {
+):Promise<void> => {
   try {
     const userId = req.user?.id;
     if (!userId) {
-      return res.status(400).json({ message: "User ID not found" });
+     res.status(400).json({ message: "User ID not found" });
+     return;
     }
     const { rows } = await pool.query(helper.authQuery, [userId]);
 
     if (rows.length === 0) {
-      return res.status(404).json({ message: "User not found" });
+     res.status(404).json({ message: "User not found" });
+     return;
     }
     res.json(rows[0]);
   } catch (error) {

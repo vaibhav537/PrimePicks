@@ -1,15 +1,22 @@
 import pool from "../connection/dbConnection";
+import qs from "qs";
 import { HELPER } from "../src/Resources";
+import { Request, Response } from "express";
 import {
   addProductRouteHelper,
   DeleteProductByID,
   GetAllProducts,
   GetProductId,
+  getProductsByCategory,
+  getProductsByTitle,
   GetSpecificProduct,
   UpdateProduct,
 } from "../src/productRouteHelper";
 const helper = new HELPER();
 
+interface SearchQuery {
+  where?: string; // The query string will be a JSON string
+}
 export const addProduct = async (
   req: {
     body: {
@@ -186,5 +193,39 @@ export const updateProductDetails = async (
   } catch (error) {
     pool.end();
     res.status(500).send({ msg: "Failure", result: false, addMsg: null });
+  }
+};
+
+export const searchProducts = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { where } = req.query;
+
+    if (!where || typeof where !== "object") {
+      res.status(400).json({ message: "Invalid query" });
+      return;
+    }
+
+    const filters = where as {
+      title?: { contains?: string };
+      category?: { id?: string };
+    };
+    let products;
+
+    if (filters.title?.contains) {
+      products = await getProductsByTitle(filters.title.contains);
+    } else if (filters.category?.id) {
+      products = await getProductsByCategory(filters.category.id);
+    } else {
+      res.status(400).json({ message: "Invalid filters" });
+      return;
+    }
+
+    res.status(200).json({ data: products });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

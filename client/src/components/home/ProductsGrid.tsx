@@ -1,6 +1,7 @@
-import { ProductType } from "@/app/admin/orders/[orderId]/page";
+
 import { encrypter } from "@/lib/utils/crypto";
 import { Helper } from "@/lib/utils/HelperClient";
+import { ProductType } from "@/lib/utils/types";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
