@@ -1,9 +1,10 @@
 import axios from "axios";
+import { Helper } from "../utils/HelperClient";
 const apiURL = "http://localhost:5000";
 const jwtKey = "accessToken";
 const adminKey = "adminToken";
 const adminRedirect = "/admin";
-const userRedirect = "/";
+const userRedirect = "/login";
 
 axios.interceptors.request.use(
   (config) => {
@@ -26,13 +27,16 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
+    const helper = new Helper();
     const status = error.response?.status;
     if (status === 401 || status === 403) {
       const isAdmin: boolean = Boolean(localStorage.getItem(adminKey));
       if (isAdmin) {
         window.location.href = adminRedirect;
+        helper.showErrorMessage("Session Expired");
       } else {
         window.location.href = userRedirect;
+        helper.showErrorMessage("Session Expired");
       }
     }
     return Promise.reject(error);
@@ -69,9 +73,14 @@ export const setAdminStoredJWT = (accessToken: string) =>
 
 /**
  * Check if an admin JWT is stored in localStorage.
- * @returns {boolean} True if the admin JWT is stored.
+ * @param {boolean} allowForClient - If true, bypasses the localStorage check and always returns true.
+ *                                   Useful for scenarios where client-side access is guaranteed.
+ * @returns {boolean} True if the admin JWT is stored or `allowForClient` is true.
  */
-export const isAdminStoredJWT = () => {
+export const isAdminStoredJWT = (allowForClient: boolean = false): boolean => {
+  if (allowForClient) {
+    return true;
+  }
   // Check if `window` is defined (i.e., client-side environment)
   if (typeof window === "undefined") {
     return false; // Returning false if SSR or `localStorage` isn't available

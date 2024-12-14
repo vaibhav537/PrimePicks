@@ -20,7 +20,7 @@ export default function HomePage() {
       if (response?.status === true) {
         setProducts(response.data);
       } else {
-        helper.showErrorMessage("Failed to fetch products!");
+        setProducts([]);
       }
     };
 

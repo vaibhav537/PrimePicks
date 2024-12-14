@@ -63,9 +63,9 @@ export const deleteProduct = async (id: string) => {
   }
 };
 
-export const getProductByID = async (id: string) => {
+export const getProductByID = async (id: string , clientUse:boolean = false) => {
   try {
-    if (!isAdminStoredJWT() || id === "") {
+    if (!isAdminStoredJWT(clientUse) || id === "") {
       return { status: false, data: null };
     }
     const response = await get(createUrl(protectedUrl + `/productById/${id}`));
