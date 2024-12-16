@@ -15,6 +15,29 @@ export const sortingTypes = [
   { id: 4, name: "Newest Arrival" },
 ];
 
+export const TrustSilderImages = [
+  {
+    name: "PrimePicks Delivered",
+    image: "/trust/delivery.png",
+  },
+  {
+    name: "Top Brand",
+    image: "/trust/trophy.png",
+  },
+  {
+    name: "Warranty Policy",
+    image: "/trust/shield.png",
+  },
+  {
+    name: "Free Delivery",
+    image: "/trust/Free.png",
+  },
+  {
+    name: "7 Days Replacement",
+    image: "/trust/Box.png",
+  },
+];
+
 export const footerLinks = [
   {
     title: "Make Money",

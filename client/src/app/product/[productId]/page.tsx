@@ -1,4 +1,5 @@
 "use client";
+import { Colors, ImageSlider, PaymentInfo, TrustSlider, Variants } from "@/components/product/index";
 import { getProductByID } from "@/lib/api/product";
 import { decrypter } from "@/lib/utils/crypto";
 import { ProductType } from "@/lib/utils/types";
@@ -37,7 +38,7 @@ const Product = ({
           className="grid gap-4"
           style={{ gridTemplateColumns: "50% 25% 25%" }}
         >
-          <div>IMAGE HERE</div>
+          <ImageSlider/>
           <div>
             {" "}
             <div className="font-semibold text-2xl">
@@ -62,7 +63,7 @@ const Product = ({
                       &#x20B9; {productDetails.discountedPrice}
                     </div>
                     <div className="text-gray-600 text-base font-medium ">
-                      List Price:{" "}
+                      List Price:
                       <span className="line-through">
                         &#x20B9; {productDetails.titlePrice}
                       </span>
@@ -73,14 +74,26 @@ const Product = ({
                     <div className="flex gap-3 items-center">
                       <h6 className="text-sm">No Cost EMI available</h6>
                       <h6 className="text-xs flex text-pp-blue underline items-center cursor-pointer">
-                        EMI Options <FaCaretDown/>
+                        EMI Options <FaCaretDown />
                       </h6>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+            <TrustSlider />
+            <Colors  colors = {productDetails.colors}/>
+            <Variants variants = {productDetails.variants}/>
+            <div className="mt-3">
+              <h5 className="text-sm font-semibold">About this item</h5>
+              <ul className="text-sm flex flex-col gap-1 list-disc pl-3">
+                {productDetails.description.map((stat) => (
+                  <li key={stat}>{stat}</li>
+                ))}
+              </ul>
+            </div>
           </div>
+          <PaymentInfo/>
         </div>
       )}
     </div>
