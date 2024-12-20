@@ -1,5 +1,11 @@
 "use client";
-import { Colors, ImageSlider, PaymentInfo, TrustSlider, Variants } from "@/components/product/index";
+import {
+  Colors,
+  ImageSlider,
+  PaymentInfo,
+  TrustSlider,
+  Variants,
+} from "@/components/product/index";
 import { getProductByID } from "@/lib/api/product";
 import { decrypter } from "@/lib/utils/crypto";
 import { ProductType } from "@/lib/utils/types";
@@ -38,9 +44,8 @@ const Product = ({
           className="grid gap-4"
           style={{ gridTemplateColumns: "50% 25% 25%" }}
         >
-          <ImageSlider/>
+          <ImageSlider images={productDetails.images} />
           <div>
-            {" "}
             <div className="font-semibold text-2xl">
               <h4>{productDetails.title}</h4>
               <div className="flex items-center gap-2">
@@ -82,8 +87,8 @@ const Product = ({
               </div>
             </div>
             <TrustSlider />
-            <Colors  colors = {productDetails.colors}/>
-            <Variants variants = {productDetails.variants}/>
+            <Colors colors={productDetails.colors} />
+            <Variants variants={productDetails.variants} />
             <div className="mt-3">
               <h5 className="text-sm font-semibold">About this item</h5>
               <ul className="text-sm flex flex-col gap-1 list-disc pl-3">
@@ -93,7 +98,13 @@ const Product = ({
               </ul>
             </div>
           </div>
-          <PaymentInfo/>
+          <PaymentInfo
+            data={{
+              price: productDetails.discountedPrice,
+              originalPrice: productDetails.titlePrice,
+              id: productDetails.id,
+            }}
+          />
         </div>
       )}
     </div>

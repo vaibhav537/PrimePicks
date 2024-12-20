@@ -1,3 +1,4 @@
+import { useAppStore } from "@/app/store/store";
 import { encrypter } from "@/lib/utils/crypto";
 import { Helper } from "@/lib/utils/HelperClient";
 import { ProductType } from "@/lib/utils/types";
@@ -10,6 +11,7 @@ import { FaStar } from "react-icons/fa";
 const Product = ({ productData }: { productData: ProductType }) => {
   const router: AppRouterInstance = useRouter();
   const helper: Helper = new Helper();
+  const { addToCart } = useAppStore();
   const handleClick = () => {
     const encryptedProductID = encrypter(productData.id);
     router.push(`/product/${encryptedProductID}`);
@@ -66,11 +68,23 @@ const Product = ({ productData }: { productData: ProductType }) => {
         </div>
 
         <div className="flex gap-2 w-full">
-          <button className="bg-pp-secondary hover:bg-pp-secondary transition-all duration-300 text-white rounded flex px-3 py-2 gap-10 font-bold w-52 items-center justify-center my-3">
+          <button
+            className="bg-pp-secondary hover:bg-pp-secondary transition-all duration-300 text-white rounded flex px-3 py-2 gap-10 font-bold w-52 items-center justify-center my-3"
+            onClick={() =>
+              addToCart(productData.id, productData.discountedPrice)
+            }
+          >
             Add to Cart
           </button>
           <button
-           className="bg-pp-blue hover:bg-[#019bcf] transition-all duration-300 text-white rounded flex px-3 py-2 gap-10 font-bold w-52 items-center justify-center my-3">Buy Now</button>
+            className="bg-pp-blue hover:bg-[#019bcf] transition-all duration-300 text-white rounded flex px-3 py-2 gap-10 font-bold w-52 items-center justify-center my-3"
+            onClick={() => {
+              addToCart(productData.id, productData.discountedPrice);
+              router.push("/cart");
+            }}
+          >
+            Buy Now
+          </button>
         </div>
       </div>
     </div>

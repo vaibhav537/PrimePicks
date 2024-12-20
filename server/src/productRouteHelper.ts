@@ -45,6 +45,17 @@ export async function GetAllProducts() {
 export async function DeleteProductByID(id: string) {
   try {
     const client = await pool.connect();
+    const fetchResult = await client.query(helper.getProductImagesQuery, [id]);
+    if (fetchResult.rows.length === 0) {
+      client.release();
+      return { status: false };
+    }
+    const PImages: string[] = fetchResult.rows[0].images;
+    const deletePromises = PImages.map((IURL) => {
+      const publicId = IURL.split("/").pop()?.split(".")[0];
+      return helper.deleteImage(publicId || "");
+    });
+    await Promise.all(deletePromises);
     const res = await client.query(helper.deleteProductByIDQuery, [id]);
     client.release();
     if (res) {

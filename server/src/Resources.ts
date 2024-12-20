@@ -3,6 +3,7 @@ import * as dotEnv from "dotenv";
 import pool from "../connection/dbConnection";
 import jwt from "jsonwebtoken";
 import CryptoJS from "crypto-js";
+import cloudinary from "../connection/cloudinaryConnection";
 dotEnv.config();
 // #region class Queries
 class internalQueries {
@@ -25,6 +26,7 @@ class internalQueries {
   public updateCategoryQuery: string = `UPDATE public."PrimePicks_Category" SET products = array_append (products::bigint[], $1) WHERE id = $2;`;
   public getAllProductsQuery: string = `SELECT * FROM "PrimePicks_Products"`;
   public getProductsByTitleQuery: string = `SELECT * FROM "PrimePicks_Products" WHERE title ILIKE $1;`;
+  public getProductImagesQuery: string = `SELECT images FROM "PrimePicks_Products" WHERE id = $1`;
   //public deleteProductByIDQuery: string = `DELETE FROM "PrimePicks_Products" WHERE id =$1`;
   public deleteProductByIDQuery: string = `WITH deleted_product AS (DELETE FROM "PrimePicks_Products" WHERE id = $1 RETURNING id) UPDATE "PrimePicks_Category" SET products = array_remove(products, (SELECT id FROM deleted_product)) WHERE $1 = ANY(products);`;
   public getProductByIdQuery: string = `SELECT * FROM "PrimePicks_Products" WHERE id = $1`;
@@ -187,5 +189,18 @@ export class HELPER extends internalQueries {
       return null;
     }
   };
+
+  public async deleteImage(publicId: string) {
+    try {
+      const result = await cloudinary.uploader.destroy(publicId);
+      if (result.result === "ok") {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      throw error;
+    }
+  }
 }
 //#endregion
