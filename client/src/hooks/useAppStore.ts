@@ -22,7 +22,6 @@ export const useUserDetails = () => {
     const fetchUserDetails = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        console.log(`Access token: ${token}`);
         if (!token) {
           throw new Error(`No token available`);
         }

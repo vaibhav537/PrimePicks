@@ -113,3 +113,17 @@ export interface DashboardData {
   topCategories: TopCategories[];
   monthlySales: MonthlySales[];
 }
+
+export interface OrderType {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  users: string;
+  products: number[];
+  price: number;
+  status: {
+    status: "pending" | "processing" | "completed";
+  };
+  paymentIntent: string | null;
+  paymentStatus: boolean;
+}

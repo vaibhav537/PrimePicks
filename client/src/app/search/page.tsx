@@ -20,7 +20,6 @@ const Search = () => {
         category ?? ""
       );
       setProducts(response.data || []);
-      console.log(typeof response);
     };
 
     if (
