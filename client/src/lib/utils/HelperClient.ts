@@ -125,6 +125,18 @@ export class Helper {
     });
   };
 
+  public showInfoMessage = (message: string) => {
+    toast.dismiss();
+    toast(message, {
+      style: {
+        border: "1px solid #602025",
+        padding: "16px",
+        color: "#da5922",
+      },
+      position: "bottom-right",
+    });
+  };
+
   public getRandomDateInNext7Days(): string {
     const currentDate: Date = new Date();
     const next7Days: Date = new Date(currentDate);

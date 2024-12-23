@@ -1,5 +1,5 @@
 import { Helper, protectedUrl } from "../utils/HelperClient";
-import { createUrl, get, isAdminStoredJWT, patch } from "./apiClients";
+import { createUrl, get, isAdminStoredJWT, patch, post } from "./apiClients";
 import { AxiosError, AxiosPromise, AxiosResponse } from "axios";
 const helper: Helper = new Helper();
 
@@ -46,5 +46,14 @@ export const updateOrderPaymentStatus = async (
   } catch (error) {
     console.log(error);
     return error as AxiosError; // Return AxiosError directly
+  }
+};
+
+export const createOrder = async (order: any) => {
+  try {
+    const response = await post(createUrl(protectedUrl + "/api/orders"), { ...order });
+    return response.data;
+  } catch (error) {
+    console.error(error);
   }
 };

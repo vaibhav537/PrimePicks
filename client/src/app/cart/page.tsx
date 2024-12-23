@@ -205,7 +205,7 @@ const Cart = () => {
             </div>
             <button
               className="bg-pp-secondary hover:bg-pp-secondary transition-all duration-300 text-white rounded flex px-3 py-2 gap-10 font-bold w-52 items-center justify-center my-3"
-              onClick={() => handleCheckoutRedirect}
+              onClick={() => handleCheckoutRedirect()}
             >
               <span>Checkout</span>
               <span>
