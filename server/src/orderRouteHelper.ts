@@ -53,27 +53,32 @@ export const UpdateOrderDetails = async (id: string, pStatus: boolean) => {
 export const GenerateNewOrder = async (
   values: (string | number | boolean | null)[],
   newOrder: OrderType
-) => {
+): Promise<any> => {
   const client = await pool.connect();
   try {
     // BEGIN TRANSACTION
     await client.query("BEGIN");
+
     // INSERT ORDER
     const result = await client.query(OQH.createNewOrderQuery, values);
-    const createdOrder = result.rows[0];
-    // UPDATE RELATED TABLES (PRIMEPICKS_PRODUCTS AND PRIMEPICKS_USERS)
+    const createdOrder = result.rows[0]; // The newly created order from the database
+
+    // Step 5: Update related tables (products and users)
     await client.query(OQH.updateProductsQuery, [
-      createdOrder.id,
-      newOrder.products,
+      JSON.stringify(newOrder.products), // Products array in JSON format
+      createdOrder.id, // Order ID to link products to this order
     ]);
-    // UPDATE PRIMEPICKS_USERS (ADD THE ORDER TO THE USER'S ORDERS)
-    await client.query(OQH.updateUserQuery, [createdOrder.id, newOrder.users]);
+
+    // Update the user's orders
+    await client.query(OQH.updateUserQuery, [createdOrder.id, newOrder.users]); // Correctly using `users`
+
     // COMMIT THE TRANSACTION
     await client.query("COMMIT");
+
     return createdOrder;
   } catch (error) {
     await client.query("ROLLBACK");
-    console.error(error);
-    throw error;
+    console.error("Error in generating order:", error);
+    throw error; // Rethrow error to be handled in the controller
   }
 };

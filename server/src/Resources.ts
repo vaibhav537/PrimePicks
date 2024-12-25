@@ -477,46 +477,94 @@ export class HELPER extends internalQueries {
 /**
  * Represents the structure of an order in the system.
  *
- * @interface OrderType
- * @remarks
- * This interface defines the properties of an order, including the ID, timestamps, user, product details,
- * price, status, payment information, and payment status.
- * It is used to describe an order entity, both in the database and the application logic.
+ * This interface defines all the necessary fields that describe an order,
+ * including its unique identifier, timestamps, user information, associated products,
+ * payment details, and status.
  *
- * @property {number} [id] - The unique identifier of the order. This is optional and may not be provided on creation.
- * @property {string} [createdAt] - The date and time when the order was created, in ISO 8601 format.
- * @property {string} [updatedAt] - The date and time when the order was last updated, in ISO 8601 format.
- * @property {string} users - The ID or name of the user who placed the order.
- * @property {number[]} products - An array of product IDs associated with the order.
- * @property {number} price - The total price of the order.
- * @property {object} status - The current status of the order, with possible values: "pending", "processing", or "completed".
- * @property {string | null} paymentIntent - A string representing the payment intent ID from the payment gateway, or `null` if not applicable.
- * @property {boolean} paymentStatus - A boolean indicating whether the payment for the order has been successfully processed.
+ * @interface OrderType
+ *
+ * @property {number} id - The unique identifier of the order.
+ * @property {string} createdAt - The timestamp when the order was created, in ISO format.
+ * @property {string} updatedAt - The timestamp when the order was last updated, in ISO format.
+ * @property {string} users - The ID or username of the user who placed the order.
+ * @property {number[]} products - An array of product IDs included in the order.
+ * @property {number} price - The total price for the order.
+ * @property {object} status - An object containing the payment method and additional status-related fields.
+ * @property {string} status.paymentMode - The payment method used for the order (e.g., "stripe").
+ * @property {any} status[key] - Flexible key-value pairs for additional status-related fields.
+ * @property {string | null} paymentIntent - The payment intent ID (if applicable) for tracking payment transactions.
+ * @property {boolean} paymentStatus - Indicates whether the payment for the order is successful (`true`) or not (`false`).
  *
  * @example
  * ```typescript
  * const order: OrderType = {
  *   id: 1,
- *   createdAt: "2024-12-25T14:30:00Z",
- *   updatedAt: "2024-12-25T15:00:00Z",
+ *   createdAt: "2024-12-25T12:34:56Z",
+ *   updatedAt: "2024-12-25T14:00:00Z",
  *   users: "user123",
  *   products: [101, 102, 103],
- *   price: 299.99,
- *   status: { status: "pending" },
- *   paymentIntent: "pi_1Fw4kJ2eZvKYlo2pXLK3ITds",
+ *   price: 250.75,
+ *   status: {
+ *     paymentMode: "stripe",
+ *     transactionId: "txn_12345",
+ *   },
+ *   paymentIntent: "pi_12345",
  *   paymentStatus: true,
  * };
  * ```
  */
 
 export interface OrderType {
-  id?: number;
-  createdAt?: string;
-  updatedAt?: string;
-  users: string;
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  users: string; // Changed from `user` to `users` for consistency
   products: number[];
   price: number;
-  status: { status: "pending" | "processing" | "completed" };
+  status: {
+    paymentMode: string;
+    [key: string]: any;
+  };
   paymentIntent: string | null;
   paymentStatus: boolean;
+}
+
+/**
+ * Defines the structure of the input data required to create a new order.
+ *
+ * This interface is used to specify the necessary information for creating an order.
+ * It includes fields such as the user ID or username, the list of product IDs, the total price of the order,
+ * and the payment status, including the payment method and any additional status-related data.
+ *
+ * @interface OrderCreateInput
+ *
+ * @property {string} user - The ID or username of the user placing the order.
+ * @property {number[]} products - An array of product IDs included in the order.
+ * @property {number} price - The total price of the order.
+ * @property {object} status - An object containing the payment mode and additional status-related data.
+ * @property {string} status.paymentMode - The method of payment (e.g., "stripe" or another payment method).
+ * @property {any} status[key] - A flexible key-value pair that allows for additional fields related to the payment status.
+ *
+ * @example
+ * ```typescript
+ * const orderInput: OrderCreateInput = {
+ *   user: "user123",
+ *   products: [1, 2, 3],
+ *   price: 100.50,
+ *   status: {
+ *     paymentMode: "stripe",
+ *     transactionId: "txn_12345",
+ *   },
+ * };
+ * ```
+ */
+
+export interface OrderCreateInput {
+  user: string;
+  products: number[];
+  price: number;
+  status: {
+    paymentMode: string;
+    [key: string]: any;
+  };
 }

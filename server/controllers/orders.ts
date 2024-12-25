@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Stripe } from "stripe";
 import pool from "../connection/dbConnection";
 import {
   GenerateNewOrder,
@@ -6,8 +7,8 @@ import {
   GetOrderDetailsById,
   UpdateOrderDetails,
 } from "../src/orderRouteHelper";
-import { HELPER, OrderType } from "../src/Resources";
 
+import { HELPER, OrderCreateInput, OrderType } from "../src/Resources";
 const helper = new HELPER();
 
 /**
@@ -164,20 +165,44 @@ export const updateOrderById = async (
 
 export const addOrder = async (req: Request, res: Response): Promise<void> => {
   try {
-    const incomingOrder: OrderType = req.body;
-    // REPLACING INCOMING FIELDS WITH SERVER GENERATED VALUES
-    const newOrder = {
-      ...incomingOrder,
-      id: Number(await helper.GenerateId()), // ID OF THE ORDER
-      createdAt: helper.getTime("Asia/Kolkata"), // CREATED AT TIMESTAMP
-      updatedAt: helper.getTime("Asia/Kolkata"), // UPDATED AT TIMESTAMP
+    const data: OrderType = req.body;
+    let paymentIntent = "";
+    let client_secret = "";
+
+    // Step 1: Create Payment Intent if the payment mode is 'stripe'
+    if (data.status.paymentMode === "stripe") {
+      const stripe = new Stripe("sk_test_51DpVXWGc9EcLzRLBNKni929hB026lACv6toMfjH1FPtIXfYgIrhXzjolcYzDDl2VwtvmyPF20PJ1JaMUCTNoEwDN00FN8hrRZL", {
+        apiVersion: "2024-12-18.acacia",
+      });
+
+      const paymentData = await stripe.paymentIntents.create({
+        amount: data.price * 100, // Price in paise (smallest currency unit for INR)
+        currency: "inr",
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+
+      paymentIntent = paymentData.id;
+      client_secret = paymentData.client_secret as string;
+    }
+
+    // Step 2: Prepare the order data with server-generated values
+    const newOrder: OrderType = {
+      ...data,
+      id: Number(await helper.GenerateId()), // Generate a unique ID for the order
+      createdAt: helper.getTime("Asia/Kolkata"), // Current timestamp
+      updatedAt: helper.getTime("Asia/Kolkata"), // Current timestamp for updatedAt
+      paymentIntent, // Add the generated paymentIntent
+      paymentStatus: false, // Set initial payment status to false
+      users: data.users, // Ensure `users` is passed correctly
     };
 
-    // VALUES TO INSERT THE ORDER
+    // Step 3: Call the GenerateNewOrder function to insert the order into the database
     const values = [
       newOrder.createdAt,
       newOrder.updatedAt,
-      newOrder.users,
+      newOrder.users, // Correctly using `users`
       JSON.stringify(newOrder.products),
       newOrder.price,
       JSON.stringify(newOrder.status),
@@ -185,13 +210,13 @@ export const addOrder = async (req: Request, res: Response): Promise<void> => {
       newOrder.paymentStatus,
     ];
 
+    // Generate the new order and update related tables (products, users)
     const createOrder = await GenerateNewOrder(values, newOrder);
-    if (newOrder.paymentIntent === "Stripe") {
-      createOrder.client_secret = helper.uuidv4();
-    }
-    res.status(200).json(createOrder);
+
+    // Step 4: Return the client_secret for Stripe if the payment method is Stripe
+    res.status(200).json({ client_secret });
   } catch (error) {
-    console.error("ERROR CREATING ERROR", error);
-    res.status(500).json({ error: "FAILED TO CREATE ORDER" });
+    console.error("Error creating order:", error);
+    res.status(500).json({ error: "Failed to create order" });
   }
 };
