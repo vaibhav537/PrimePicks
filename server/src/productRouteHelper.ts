@@ -1,6 +1,8 @@
 import pool from "../connection/dbConnection";
-import { HELPER } from "../src/Resources";
+import { HELPER, ProductQueries } from "../src/Resources";
+const PQH = new ProductQueries();
 const helper = new HELPER();
+
 
 interface ReqResult {
   status: boolean;
@@ -11,7 +13,7 @@ export async function addProductRouteHelper(
   values: Array<any>
 ): Promise<Boolean> {
   try {
-    await pool.query(helper.addProductQuery, values);
+    await pool.query(PQH.addProductQuery, values);
     return true;
   } catch (error) {
     console.error("Error inserting product:", error);
@@ -22,7 +24,7 @@ export async function addProductRouteHelper(
 export async function GetProductId(name: string): Promise<ReqResult> {
   try {
     const client = await pool.connect();
-    const res = await client.query(helper.getProductIdQuery, [name]);
+    const res = await client.query(PQH.getProductIdQuery, [name]);
     client.release();
     return { status: true, id: res.rows[0].id };
   } catch (error) {
@@ -33,7 +35,7 @@ export async function GetProductId(name: string): Promise<ReqResult> {
 export async function GetAllProducts() {
   try {
     const client = await pool.connect();
-    const res = await client.query(helper.getAllProductsQuery);
+    const res = await client.query(PQH.getAllProductsQuery);
     client.release();
     return { status: true, data: res.rows };
   } catch (error) {
@@ -45,7 +47,7 @@ export async function GetAllProducts() {
 export async function DeleteProductByID(id: string) {
   try {
     const client = await pool.connect();
-    const fetchResult = await client.query(helper.getProductImagesQuery, [id]);
+    const fetchResult = await client.query(PQH.getProductImagesQuery, [id]);
     if (fetchResult.rows.length === 0) {
       client.release();
       return { status: false };
@@ -56,7 +58,7 @@ export async function DeleteProductByID(id: string) {
       return helper.deleteImage(publicId || "");
     });
     await Promise.all(deletePromises);
-    const res = await client.query(helper.deleteProductByIDQuery, [id]);
+    const res = await client.query(PQH.deleteProductByIDQuery, [id]);
     client.release();
     if (res) {
       return { status: true };
@@ -70,7 +72,7 @@ export async function DeleteProductByID(id: string) {
 export async function GetSpecificProduct(id: string) {
   try {
     const client = await pool.connect();
-    const res = await client.query(helper.getProductByIdQuery, [id]);
+    const res = await client.query(PQH.getProductByIdQuery, [id]);
     client.release();
     return { status: true, data: res.rows[0] };
   } catch (error) {
@@ -82,7 +84,7 @@ export async function GetSpecificProduct(id: string) {
 export async function UpdateProduct(values: Array<string | Array<string>>) {
   try {
     const client = await pool.connect();
-    const res = await client.query(helper.updateProductDetailsQuery, values);
+    const res = await client.query(PQH.updateProductDetailsQuery, values);
     client.release();
     return { status: true, data: res.rows[0].id };
   } catch (error) {
@@ -93,12 +95,12 @@ export async function UpdateProduct(values: Array<string | Array<string>>) {
 
 export const getProductsByTitle = async (searchTerm: string) => {
   const values = [`%${searchTerm}%`];
-  const result = await pool.query(helper.getProductsByTitleQuery, values);
+  const result = await pool.query(PQH.getProductsByTitleQuery, values);
   return result.rows;
 };
 
 export const getProductsByCategory = async (categoryId: string) => {
   const values = [categoryId];
-  const result = await pool.query(helper.getProductsByCategoryQuery, values);
+  const result = await pool.query(PQH.getProductsByCategoryQuery, values);
   return result.rows;
 };

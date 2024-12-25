@@ -51,7 +51,7 @@ export const updateOrderPaymentStatus = async (
 
 export const createOrder = async (order: any) => {
   try {
-    const response = await post(createUrl(protectedUrl + "/api/orders"), { ...order });
+    const response = await post(createUrl(protectedUrl + "/orders"), { ...order });
     return response.data;
   } catch (error) {
     console.error(error);

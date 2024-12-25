@@ -1,6 +1,6 @@
 import pool from "../connection/dbConnection";
 import qs from "qs";
-import { HELPER } from "../src/Resources";
+import { CategoryQueries, HELPER } from "../src/Resources";
 import { Request, Response } from "express";
 import {
   addProductRouteHelper,
@@ -13,6 +13,7 @@ import {
   UpdateProduct,
 } from "../src/productRouteHelper";
 const helper = new HELPER();
+const CQH = new CategoryQueries();
 
 interface SearchQuery {
   where?: string; // The query string will be a JSON string
@@ -74,7 +75,7 @@ export const addProduct = async (
       const result = await GetProductId(title);
       if (result.status === true && result.id !== 0) {
         const productId = result.id;
-        await pool.query(helper.updateCategoryQuery, [productId, category.id]);
+        await pool.query(CQH.updateCategoryQuery, [productId, category.id]);
         res.status(200).send({
           msg: "Success",
           result: true,

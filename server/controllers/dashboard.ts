@@ -1,7 +1,8 @@
 import { PoolClient } from "pg";
 import pool from "../connection/dbConnection";
-import { HELPER } from "../src/Resources";
+import { CategoryQueries, HELPER } from "../src/Resources";
 const helper = new HELPER();
+const CQH = new CategoryQueries();
 export const getDashboardData = async (req:any, res:any): Promise<void> => {
     let client:PoolClient | null = null;
   try {
@@ -10,7 +11,7 @@ export const getDashboardData = async (req:any, res:any): Promise<void> => {
     const revenueResult = await client.query(helper.revenueQuery);
     const revenueDataResult = await client.query(helper.revenueDataQuery);
     const recentOrdersResult = await client.query(helper.recentOrdersQuery);
-    const topCategoriesResult = await client.query(helper.topCategoriesQuery);
+    const topCategoriesResult = await client.query(CQH.topCategoriesQuery);
     const monthlySalesResult = await client.query(helper.monthlySalesQuery);
     res.json({
         stats: statsResult.rows[0],

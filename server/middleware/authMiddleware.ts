@@ -17,33 +17,6 @@ export interface AuthenticateRequest extends Request {
   };
 }
 
-// export const authenticateToken = async (
-//   req: AuthenticateRequest,
-//   res: Response,
-//   next: NextFunction
-// )  => {
-//   const authHeader = req.headers.authorization;
-//   const token = authHeader && authHeader.split(" ")[1];
-//   const helper = new HELPER();
-
-//   if (!token) {
-//     return res.status(401).json({ message: "Access denied" });
-//   }
-
-//   try {
-//     jwt.verify(token, key, (err, user: any) => {
-//       if (err) {
-//         return res.status(403).json({ message: "Forbidden: Invalid Token" });
-//       }
-//       req.user = { id: user.id };
-//       next();
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(403).json({ message: "Token is invalid or expired." });
-//   }
-// };
-
 export const authenticateToken = (
   req: AuthenticateRequest,
   res: Response,

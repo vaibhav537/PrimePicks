@@ -29,7 +29,7 @@ axios.interceptors.response.use(
   (error) => {
     const helper = new Helper();
     const status = error.response?.status;
-    if (status === 401 || status === 403) {
+    if (status === 401 || status === 403 || !status) {
       const isAdmin: boolean = Boolean(localStorage.getItem(adminKey));
       if (isAdmin) {
         window.location.href = adminRedirect;
@@ -47,7 +47,7 @@ axios.interceptors.response.use(
  * @param {string} endPoint - API endpoint.
  * @returns {string} Fully qualified URL.
  */
-export const createUrl = (endPoint: string) => new URL(endPoint, apiURL).href;
+export const createUrl = (endPoint: string): string => new URL(endPoint, apiURL).href;
 
 /**
  * Check if a JWT is stored in localStorage.

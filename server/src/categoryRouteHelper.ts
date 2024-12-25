@@ -1,6 +1,6 @@
 import pool from "../connection/dbConnection";
-import { HELPER } from "../src/Resources";
-const helper = new HELPER();
+import { CategoryQueries } from "../src/Resources";
+const CQH = new CategoryQueries();
 
 interface ReqResult {
   status: boolean;
@@ -12,7 +12,7 @@ export async function addCategoryRouteHelper(
 ): Promise<Boolean> {
   try {
     const client = await pool.connect();
-    await client.query(helper.addCategoryQuery, values);
+    await client.query(CQH.addCategoryQuery, values);
     client.release();
     return true;
   } catch (error) {
@@ -23,7 +23,7 @@ export async function addCategoryRouteHelper(
 export async function GetCategoryId(name: string): Promise<ReqResult> {
   try {
     const client = await pool.connect();
-    const res = await client.query(helper.getCategoryIdQuery, [name]);
+    const res = await client.query(CQH.getCategoryIdQuery, [name]);
     client.release();
     return { status: true, id: res.rows[0].id };
   } catch (error) {
@@ -34,7 +34,7 @@ export async function GetCategoryId(name: string): Promise<ReqResult> {
 export async function GetAllCategory() {
   try {
     const client = await pool.connect();
-    const res = await client.query(helper.getAllCategoryQuery);
+    const res = await client.query(CQH.getAllCategoryQuery);
     client.release();
     return { status: true, data: res.rows };
   } catch (error) {
@@ -46,7 +46,7 @@ export async function GetAllCategory() {
 export async function GetSpecificCategory(id: string) {
   try {
     const client = await pool.connect();
-    const res = await client.query(helper.getCategoryNameByIdQuery, [id]);
+    const res = await client.query(CQH.getCategoryNameByIdQuery, [id]);
     client.release();
     return { status: true, data: res.rows[0].name };
   } catch (error) {
@@ -62,7 +62,7 @@ export async function UpdateCategory(
 ) {
   try {
     const client = await pool.connect();
-    const res = await client.query(helper.updateCategoryNameByIdQuery, [
+    const res = await client.query(CQH.updateCategoryNameByIdQuery, [
       id,
       CategoryName,
       updatedAt,
@@ -78,7 +78,7 @@ export async function UpdateCategory(
 export async function DeleteCategoryByID(id: string) {
   try {
     const client = await pool.connect();
-    const res = await client.query(helper.deleteCategoryByIDQuery, [id]);
+    const res = await client.query(CQH.deleteCategoryByIDQuery, [id]);
     client.release();
     if (res) {
       return { status: true };

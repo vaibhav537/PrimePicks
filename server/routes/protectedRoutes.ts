@@ -16,7 +16,7 @@ import {
   searchProducts,
   updateProductDetails,
 } from "../controllers/product";
-import { allOrders, orderById, updateOrderById } from "../controllers/orders";
+import { addOrder, allOrders, orderById, updateOrderById } from "../controllers/orders";
 import { getDashboardData } from "../controllers/dashboard";
 
 const protectedRouter = express.Router();
@@ -45,6 +45,7 @@ protectedRouter.patch("/updateProduct/:id", updateProductDetails);
 protectedRouter.get("/all-orders", allOrders);
 protectedRouter.get("/orderById/:id", orderById);
 protectedRouter.patch("/orderById/:id", updateOrderById);
+protectedRouter.post("/orders", addOrder)
 
 // Dashboard routes
 protectedRouter.get("/dashboard-stats", getDashboardData);
