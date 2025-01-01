@@ -15,7 +15,6 @@ const ProductsGrid = ({
   title: string;
   products: ProductType[];
 }) => {
-  console.log({ products });
   const helper: Helper = new Helper();
   const router: AppRouterInstance = useRouter();
   return (

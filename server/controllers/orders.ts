@@ -159,22 +159,20 @@ export const updateOrderById = async (
  * - If an error occurs during the creation of the order, a `500` status code with a failure message is returned.
  *
  * @example
- * // Example usage of this function in an Express.js route
+ * ```typescript
  * app.post("/order", addOrder);
+ * ```
  */
 
 export const addOrder = async (req: Request, res: Response): Promise<void> => {
   try {
     const data: OrderType = req.body;
-    let paymentIntent = "";
+    let pMODE = "";
     let client_secret = "";
-
-    // Step 1: Create Payment Intent if the payment mode is 'stripe'
-    if (data.status.paymentMode === "stripe") {
+    if (data.paymentIntent === "Stripe") {
       const stripe = new Stripe(process.env.STRIPE_KEY || "", {
         apiVersion: "2024-12-18.acacia",
       });
-
       const paymentData = await stripe.paymentIntents.create({
         amount: data.price * 100, // Price in paise (smallest currency unit for INR)
         currency: "inr",
@@ -182,38 +180,32 @@ export const addOrder = async (req: Request, res: Response): Promise<void> => {
           enabled: true,
         },
       });
-
-      paymentIntent = paymentData.id;
+      pMODE = paymentData.id;
       client_secret = paymentData.client_secret as string;
     }
-
-    // Step 2: Prepare the order data with server-generated values
     const newOrder: OrderType = {
       ...data,
-      id: Number(await helper.GenerateId()), // Generate a unique ID for the order
-      createdAt: helper.getTime("Asia/Kolkata"), // Current timestamp
-      updatedAt: helper.getTime("Asia/Kolkata"), // Current timestamp for updatedAt
-      paymentIntent, // Add the generated paymentIntent
-      paymentStatus: false, // Set initial payment status to false
-      users: data.users, // Ensure `users` is passed correctly
+      id: Number(await helper.GenerateId()),
+      createdAt: helper.getTime("Asia/Kolkata"),
+      updatedAt: helper.getTime("Asia/Kolkata"),
+      status: { status: data.status.status, key: pMODE },
+      paymentStatus: false,
+      users: data.users,
     };
-
-    // Step 3: Call the GenerateNewOrder function to insert the order into the database
+    const productsArray = newOrder.products;
+    const formattedArray = `{${productsArray.join(",")}}`;
     const values = [
+      newOrder.id,
       newOrder.createdAt,
       newOrder.updatedAt,
-      newOrder.users, // Correctly using `users`
-      JSON.stringify(newOrder.products),
+      newOrder.users,
+      formattedArray,
       newOrder.price,
       JSON.stringify(newOrder.status),
       newOrder.paymentIntent,
       newOrder.paymentStatus,
     ];
-
-    // Generate the new order and update related tables (products, users)
     const createOrder = await GenerateNewOrder(values, newOrder);
-
-    // Step 4: Return the client_secret for Stripe if the payment method is Stripe
     res.status(200).json({ client_secret });
   } catch (error) {
     console.error("Error creating order:", error);
