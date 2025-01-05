@@ -22,7 +22,6 @@ export class ProductQueries {
   public getAllProductsQuery: string = `SELECT * FROM "PrimePicks_Products"`;
   public getProductsByTitleQuery: string = `SELECT * FROM "PrimePicks_Products" WHERE title ILIKE $1;`;
   public getProductImagesQuery: string = `SELECT images FROM "PrimePicks_Products" WHERE id = $1`;
-  //public deleteProductByIDQuery: string = `DELETE FROM "PrimePicks_Products" WHERE id =$1`;
   public deleteProductByIDQuery: string = `WITH deleted_product AS (DELETE FROM "PrimePicks_Products" WHERE id = $1 RETURNING id) UPDATE "PrimePicks_Category" SET products = array_remove(products, (SELECT id FROM deleted_product)) WHERE $1 = ANY(products);`;
   public getProductByIdQuery: string = `SELECT * FROM "PrimePicks_Products" WHERE id = $1`;
   public updateProductDetailsQuery: string = `UPDATE "PrimePicks_Products" SET updatedat = $1, title = $2, "discountedPrice" = $3, "titlePrice" = $4, description = $5, colors = $6, variants = $7, category_id = $8 WHERE id = $9 RETURNING id`;
@@ -34,13 +33,13 @@ export class OrderQueries {
   public getOrderDetailsByIDQuery: string = `WITH order_products AS (SELECT po.id AS order_id, UNNEST(po.products) AS product_id FROM public."PrimePicks_Orders" po WHERE po.id = $1) SELECT po.id AS "orderId", po."createdAt", po."updatedAt", po.paymentintent, po."paymentStatus" AS "paymentStatus", po.price, po.status AS "status", JSON_BUILD_OBJECT('id', pu.id::TEXT, 'username', pu.username, 'email', pu.email) AS "user", JSON_AGG(JSON_BUILD_OBJECT('id', pp.id::TEXT, 'categoryId', pp.category_id::TEXT, 'title', pp.title, 'description', pp.description, 'colors', pp.colors, 'images', pp.images, 'createdAt', pp.createdat, 'updatedAt', pp.updatedat, 'salePrice', pp."titlePrice", 'discountedPrice', pp."discountedPrice", 'variants', pp.variants)) AS "products" FROM public."PrimePicks_Orders" po JOIN public."PrimePicks_Users" pu ON po.users = pu.id::TEXT LEFT JOIN order_products op ON po.id = op.order_id LEFT JOIN public."PrimePicks_Products" pp ON op.product_id = pp.id WHERE po.id = $1 GROUP BY po.id, pu.id;`;
   public updateOrderPaymentStatusQuery: string = `UPDATE public."PrimePicks_Orders" SET "paymentStatus" = $2 WHERE id = $1; `;
   public allOrdersQuery: string = `SELECT * FROM public."PrimePicks_Orders"`;
- // public updateProductsQuery: string = `UPDATE "PrimePicks_Products" SET orders = array_append(orders, $1) WHERE id = ANY($2)`;
   public updateProductsQuery: string = `UPDATE "PrimePicks_Products" SET orders = array_append(orders, $1) WHERE id = ANY($2::bigint[])`;
- // public updateUserQuery: string = `UPDATE "PrimePicks_Users"SET orders = array_append(orders, $1) WHERE id = ANY($2::bigint[])`;
   public updateUserQuery: string = `UPDATE "PrimePicks_Users" SET orders = array_append(orders, $1) WHERE id = ANY($2::bigint[]);`;
   public createNewOrderQuery: string = `INSERT INTO "PrimePicks_Orders" (id, "createdAt", "updatedAt", users, products, price, status, paymentintent, "paymentStatus") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;`;
-  //public createNewOrderQuery: string = `INSERT INTO "PrimePicks_Orders" ("createdAt", "updatedAt", users, products, price, status, paymentintent, "paymentStatus") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, "createdAt", "updatedAt";`;
-}
+  public updateOrderStatusQuery: string = `UPDATE "PrimePicks_Orders" SET "paymentStatus" = true, status = jsonb_set(status::jsonb, '{status}', '"completed"') WHERE id = $1;`;
+  public userOrderQuery: string = `SELECT o.id, o."createdAt", o."updatedAt", o.users, o.products, o.price::text, o.status::jsonb AS status, o.paymentintent, o."paymentStatus", u.username AS user FROM "PrimePicks_Orders" o INNER JOIN "PrimePicks_Users" u ON o.users::bigint = u.id WHERE u.id = $1;`;
+  public paymentIntentQuery: string = `  SELECT id, status FROM "PrimePicks_Orders" WHERE status->>'key' = $1`;
+ }
 //#endregion
 
 //#region class Category Queries

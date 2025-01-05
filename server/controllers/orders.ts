@@ -1,11 +1,15 @@
 import { Request, Response } from "express";
 import { Stripe } from "stripe";
 import pool from "../connection/dbConnection";
+import QueryString from "qs";
 import {
+  checkPaymentIntent,
   GenerateNewOrder,
   GetAllOrders,
+  getOrderByUserId,
   GetOrderDetailsById,
   UpdateOrderDetails,
+  updateOrderPaymentStatus,
 } from "../src/orderRouteHelper";
 
 import { HELPER, OrderCreateInput, OrderType } from "../src/Resources";
@@ -210,5 +214,56 @@ export const addOrder = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.error("Error creating order:", error);
     res.status(500).json({ error: "Failed to create order" });
+  }
+};
+
+export const updateOrderStatus = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const paymentintent = req.query.paymentIntent as string;
+    if (!paymentintent) {
+      res.status(400).json({ error: "Payment intent is required" });
+      return;
+    }
+    const response = await checkPaymentIntent(paymentintent);
+    if (response.status === false) {
+      res.status(400).json({ error: "Invalid payment intent" });
+      return;
+    }
+    const id = response.id;
+    const isStatusUpdated = await updateOrderPaymentStatus(id);
+    if (isStatusUpdated) {
+      res.status(200).json({ message: "Order status updated" });
+      return;
+    } else {
+      res.status(500).json({ error: "Failed to update order status" });
+      return;
+    }
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    res.status(500).json({ error: "Failed to update order status" });
+    return;
+  }
+};
+
+export const userOrders = async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.userId);
+
+  if (isNaN(userId)) {
+    res.status(400).json({ status: false, error: "Invalid user ID" });
+    return;
+  }
+  try {
+    const result = await getOrderByUserId(userId);
+    res.status(200).json({ status: true, data: result });
+    return;
+  } catch (error) {
+    console.error("Error fetching user orders:", error);
+    res
+      .status(500)
+      .json({ status: false, error: "Failed to fetch user orders" });
+    return;
   }
 };

@@ -24,13 +24,10 @@ const Page = () => {
   const effectRun = useRef(false);
   useEffect(() => {
     if (effectRun.current) return;
-    effectRun.current = true
-    console.log("useEffect triggered", { orderInfo, orderCreated });
+    effectRun.current = true;
     const handleCreateOrder = async () => {
       if (orderCreated) return; // Prevent multiple order creations
-      console.log("CREATE ORDER CALLED");
       const response = await createOrder(orderInfo);
-      console.log("Order response:", response);
       if (orderInfo?.paymentIntent === "Stripe" && response?.client_secret) {
         setClientSecret(response?.client_secret);
       }
@@ -55,17 +52,14 @@ const Page = () => {
     <div>
       {orderCreated && (
         <>
-          {!isCod &&
-            clientSecret.length > 0 &&
-            (console.log("Rendering Elements with clientSecret:", clientSecret),
-            (
-              <Elements
-                stripe={stripePromise}
-                options={{ clientSecret, appearance: { theme: "stripe" } }}
-              >
-                <CheckoutFrom clientSecret={clientSecret}></CheckoutFrom>
-              </Elements>
-            ))}
+          {!isCod && clientSecret.length > 0 && (
+            <Elements
+              stripe={stripePromise}
+              options={{ clientSecret, appearance: { theme: "stripe" } }}
+            >
+              <CheckoutFrom clientSecret={clientSecret}></CheckoutFrom>
+            </Elements>
+          )}
           {isCod && (
             <h2 className="flex items-center justify-center h-[80vh] w-full text-3xl gap-2">
               <span>Order Created Successfully.</span>

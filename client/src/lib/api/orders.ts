@@ -1,3 +1,4 @@
+import QueryString from "qs";
 import { Helper, protectedUrl } from "../utils/HelperClient";
 import { createUrl, get, isAdminStoredJWT, patch, post } from "./apiClients";
 import { AxiosError, AxiosPromise, AxiosResponse } from "axios";
@@ -15,9 +16,9 @@ export const getAllOrders = async () => {
   }
 };
 
-export const getOrder = async (id: string) => {
+export const getOrder = async (id: string, clientUse = false) => {
   try {
-    if (!isAdminStoredJWT() || id === "") {
+    if (!isAdminStoredJWT(clientUse) || id === "") {
       return { status: false, data: null };
     }
     const response = await get(createUrl(protectedUrl + `/orderById/${id}`));
@@ -51,9 +52,44 @@ export const updateOrderPaymentStatus = async (
 
 export const createOrder = async (order: any) => {
   try {
-    const response = await post(createUrl(protectedUrl + "/orders"), { ...order });
+    const response = await post(createUrl(protectedUrl + "/orders"), {
+      ...order,
+    });
     return response.data;
   } catch (error) {
     console.error(error);
+  }
+};
+
+export const recordStripePayment = async (
+  payment_intent: string
+): Promise<boolean> => {
+  try {
+    const query = QueryString.stringify({ paymentIntent: payment_intent });
+    const response = await post(
+      createUrl(`${protectedUrl}/updateOrders?${query}`)
+    );
+    if (response.status === 200) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+export const getUserOrders = async (
+  userId: number
+): Promise<AxiosResponse<any> | never[]> => {
+  try {
+    const response = await get(
+      createUrl(protectedUrl + `/userOrders/${userId}`)
+    );
+    return response.status === 200 ? response : [];
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 };

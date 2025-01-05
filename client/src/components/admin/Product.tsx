@@ -1,5 +1,5 @@
 import React from "react";
-import { ProductType } from "@/app/admin/orders/[orderId]/page";
+import { ProductType } from "@/lib/utils/types";
 import Image from "next/image";
 
 const Product = ({ productData }: { productData: ProductType }) => {
@@ -13,7 +13,7 @@ const Product = ({ productData }: { productData: ProductType }) => {
       </div>
       <div className="w-16 text-center">
         {" "}
-        <strong>{productData.discountedPrice}</strong>
+        <strong>&#x20b9;{productData.discountedPrice}</strong>
       </div>
     </div>
   );
